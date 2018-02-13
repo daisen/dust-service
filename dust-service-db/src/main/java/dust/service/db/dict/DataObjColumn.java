@@ -391,22 +391,23 @@ public class DataObjColumn {
         if (schema.containsKey("primaryKey")) {
             dataColumn.primaryKey = Converter.toBoolean(schema.get("primaryKey"));
         } else if (schema.containsKey("isPrimaryKey")) {
-            dataColumn.ignore = Converter.toBoolean(schema.get("isPrimaryKey"));
+            dataColumn.primaryKey = Converter.toBoolean(schema.get("isPrimaryKey"));
         }
 
 
         if (schema.containsKey("autoIncrement")) {
             dataColumn.autoIncrement = Converter.toBoolean(schema.get("autoIncrement"));
         } else if (schema.containsKey("isAutoIncrement")) {
-            dataColumn.ignore = Converter.toBoolean(schema.get("isAutoIncrement"));
+            dataColumn.autoIncrement = Converter.toBoolean(schema.get("isAutoIncrement"));
         }
 
 
         if (schema.containsKey("required")) {
             dataColumn.required = Converter.toBoolean(schema.get("required"));
         } else if (schema.containsKey("isRequired")) {
-            dataColumn.ignore = Converter.toBoolean(schema.get("isRequired"));
+            dataColumn.required = Converter.toBoolean(schema.get("isRequired"));
         }
+
 
         if (schema.containsKey("mirrorColumnLabel")) {
             dataColumn.mirrorColumnLabel = Converter.toString(schema.get("mirrorColumnLabel"));
