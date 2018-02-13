@@ -96,13 +96,6 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
 
             DataRow dr = dt.getRows().get(0);
             JSONObject jsonOfObj = row2CamelJson(dr);
-//            jsonOfObj.put("name", dr.get("name"));
-//            jsonOfObj.put("alias", dr.get("alias"));
-//            jsonOfObj.put("tableName", dr.get("table_name"));
-//            jsonOfObj.put("whereSql", dr.get("where_sql"));
-//            jsonOfObj.put("orderBySql", dr.get("order_by_sql"));
-//            jsonOfObj.put("fixWhereSql", dr.get("fix_where_sql"));
-//            jsonOfObj.put("fixCondition", dr.get("fix_condition"));
 
             JSONObject p = new JSONObject();
             p.put("start", dr.get("start"));
@@ -153,23 +146,6 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
                 JSONArray arr = new JSONArray();
                 for (int i = 0; i < dtCol.size(); i++) {
                     DataRow r = dtCol.getRows().get(i);
-//
-//                    jsonOfCol.put("name", r.get("name"));
-//                    jsonOfCol.put("columnName", r.get("column_name"));
-//                    jsonOfCol.put("columnLabel", r.get("column_label"));
-//                    jsonOfCol.put("dataType", r.get("data_type"));
-//                    jsonOfCol.put("mirrorColumnLabel", r.get("mirror_column_label"));
-//                    jsonOfCol.put("width", r.get("width"));
-//                    jsonOfCol.put("decimalDigits", r.get("decimal_digits"));
-//                    jsonOfCol.put("tableName", r.get("table_name"));
-//                    jsonOfCol.put("ignore", Converter.toBoolean(r.get("is_ignore")));
-//                    jsonOfCol.put("primaryKey", Converter.toBoolean(r.get("is_primary_key")));
-//                    jsonOfCol.put("required", Converter.toBoolean(r.get("is_required")));
-//                    jsonOfCol.put("autoIncrement", Converter.toBoolean(r.get("is_auto_increment")));
-//                    jsonOfCol.put("defaultValue", r.get("default_value"));
-//                    jsonOfCol.put("relationTableName", r.get("relation_table_name"));
-//                    jsonOfCol.put("relationColumnName", r.get("relation_column_name"));
-//                    jsonOfCol.put("idColumnName", r.get("id_column_name"));
                     arr.add(row2CamelJson(r));
                 }
 
@@ -204,15 +180,6 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
                 JSONArray arr = new JSONArray();
                 for (int i = 0; i < dtTable.size(); i++) {
                     DataRow r = dtTable.getRows().get(i);
-
-//                    jsonOfTable.put("tableName", r.get("table_name"));
-//                    jsonOfTable.put("columnName", r.get("column_name"));
-//                    jsonOfTable.put("relationColumn", r.get("relation_column"));
-//                    jsonOfTable.put("followDelete", Converter.toBoolean(r.get("follow_delete")));
-//                    jsonOfTable.put("followInsert", Converter.toBoolean(r.get("follow_insert")));
-//                    jsonOfTable.put("followUpdate", Converter.toBoolean(r.get("follow_update")));
-//                    jsonOfTable.put("relationType", r.get("relationType"));
-//                    jsonOfTable.put("conditions", JSON.parseArray(r.get("conditions")));
                     arr.add(row2CamelJson(r));
 
                 }
