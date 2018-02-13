@@ -2,6 +2,7 @@ package dust.service.db.dict;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import dust.service.core.util.Converter;
 import dust.service.db.dict.condition.*;
 
 import java.util.List;
@@ -87,10 +88,13 @@ public class Condition {
         this.operation = OperationType.valueOf(strOperation);
         JSONObject rightJson = jsonObject.getJSONObject("right");
         JSONObject leftJson = jsonObject.getJSONObject("left");
-        Boolean req = jsonObject.getBoolean("require");
-        if (req != null) {
-            this.require = req;
+
+        if (jsonObject.containsKey("require")) {
+            this.require = Converter.toBoolean(jsonObject.get("require"));
+        } else if (jsonObject.containsKey("isRequire")) {
+            this.require = Converter.toBoolean(jsonObject.get("isRequire"));
         }
+
         switch (operation) {
             case EXIST:
             case NOT_EXIST:
