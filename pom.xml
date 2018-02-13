@@ -113,4 +113,11 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <distributionManagement>
+    <repository>
+        <id>myRepository</id>
+        <name>myRepository</name>
+        <url>http://101.200.49.119:8081/nexus/content/repositories/releases/</url>
+    </repository>
+    </distributionManagement>
 </project>

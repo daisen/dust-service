@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import dust.service.core.util.Converter;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * 一种简易的数据行映射，取代原来的Map方式存放数据
@@ -70,6 +71,14 @@ public class DataRow {
 
     protected void setDataTable(DataTable dataTable) {
         this.dataTable = dataTable;
+    }
+
+    public void iterator(Function<String, Boolean> func) {
+        for(String str : this.data.keySet()) {
+            if (!func.apply(str)) {
+                return;
+            }
+        }
     }
 
 
