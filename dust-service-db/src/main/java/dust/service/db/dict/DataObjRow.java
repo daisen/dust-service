@@ -161,8 +161,8 @@ public class DataObjRow {
     }
 
 
-    public Object getValue(String columnName) {
-        return getField(columnName).getValue();
+    public Object getValue(String columnLabel) {
+        return getField(columnLabel).getValue();
     }
 
     public Object getValue(int index) {
