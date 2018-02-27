@@ -147,6 +147,11 @@ public class DataObjField {
         this.value = this.originValue;
     }
 
+    public void acceptChanges() {
+        this.modified = false;
+        this.originValue = this.value;
+    }
+
     @Override
     public String toString() {
         return "value:" + value + " orgin:" + originValue + " columnId:" + columnId;

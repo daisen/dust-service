@@ -385,16 +385,45 @@ public class DataObj {
         return dataObjRow;
     }
 
+    /**
+     * 业务修改，强修改，会把已存在的行强制置为修改状态；如果不存在则以修改行加入dataObj
+     *
+     * @param row
+     */
+    public void modifyRow(DataObjRow row) {
+        if (this.rows.contains(row)) {
+            row.setRowState(RowState.MODIFIED);
+            this.collectChanged(OnCollectionChanged.ActionType.REPLACE);
+        } else {
+            if (row.getRowState() == RowState.DETACHED && row.getDataObj() == this) {
+                row.setRowState(RowState.MODIFIED);
+                this.rows.add(row);
+                this.collectChanged(OnCollectionChanged.ActionType.ADD);
+            }
+        }
+    }
+
     public void clear() {
         this.rows.clear();
         this.deleteRows.clear();
         this.collectChanged(OnCollectionChanged.ActionType.RESET);
     }
 
+    /**
+     * 业务方法，如果dataObjRow已在DataObj则移除行的同时做删除操作，如果dataObjRow不再DataObj则做业务标记操作，做删除操作
+     *
+     * @param dataObjRow
+     */
     public void deleteRow(DataObjRow dataObjRow) {
         checkNotNull(dataObjRow);
         if (!this.rows.contains(dataObjRow)) {
-            throw new IllegalArgumentException("dataObjRow has been deleted or removed");
+            if (dataObjRow.getRowState() == RowState.DETACHED && dataObjRow.getDataObj() == this) {
+                dataObjRow.setRowState(RowState.DELETED);
+                this.deleteRows.add(dataObjRow);
+                return;
+            } else {
+                throw new IllegalArgumentException("dataObjRow has been deleted or removed");
+            }
         }
 
         this.rows.remove(dataObjRow);
@@ -404,6 +433,45 @@ public class DataObj {
         deleteRows.add(dataObjRow);
         this.rowRemoved(dataObjRow);
         this.collectChanged(OnCollectionChanged.ActionType.REMOVE);
+    }
+
+    /**
+     * 还原修改，注意，行的顺序不会还原
+     * 增加行移除，修改行还原，删除行从末尾补上
+     */
+    public void rejectChanges() {
+        int len = this.rows.size();
+        for (int i = len; i > 0; i--) {
+            DataObjRow row = this.rows.get(i - 1);
+            if (row.getRowState() == RowState.ADDED) {
+                this.rows.remove(row);
+            }
+
+            if (row.getRowState() == RowState.MODIFIED) {
+                row.rejectChanges();
+            }
+        }
+
+        for (DataObjRow row : this.deleteRows) {
+            row.setRowState(RowState.UNCHANGED);
+            this.rows.add(row);
+        }
+
+        this.deleteRows.clear();
+
+        this.collectChanged(OnCollectionChanged.ActionType.RESET);
+    }
+
+    /**
+     * 接受修改，通常用于save操作
+     */
+    public void acceptChanges() {
+        for(DataObjRow row : this.rows) {
+            row.acceptChanges();
+        }
+
+        this.deleteRows.clear();
+        this.collectChanged(OnCollectionChanged.ActionType.RESET);
     }
 
     public void removeRow(DataObjRow dataObjRow) {
@@ -582,6 +650,7 @@ public class DataObj {
 
     public void save() throws SQLException {
         SqlBuilderFactory.build().save(this);
+        this.acceptChanges();
     }
 
     public void save(ISqlAdapter adapter) throws SQLException {
