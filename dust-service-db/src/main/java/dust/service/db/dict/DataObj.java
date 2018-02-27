@@ -649,12 +649,17 @@ public class DataObj {
     }
 
     public void save() throws SQLException {
-        SqlBuilderFactory.build().save(this);
-        this.acceptChanges();
+        ISqlAdapter globalAdapter = DictGlobalConfig.getSqlAdapter();
+        save(globalAdapter, true);
     }
 
     public void save(ISqlAdapter adapter) throws SQLException {
-        SqlBuilderFactory.build().save(this, adapter);
+        save(adapter, false);
+    }
+
+    private void save(ISqlAdapter adapter, boolean autoCommit) throws SQLException {
+        SqlBuilderFactory.build().save(this, adapter, autoCommit);
+        this.acceptChanges();
     }
 
     public PageInfo getPageInfo() {
@@ -728,7 +733,8 @@ public class DataObj {
     }
 
     public void search() throws SQLException {
-        SqlBuilderFactory.build().search(this);
+        this.search(DictGlobalConfig.getSqlAdapter());
+
     }
 
     public void search(ISqlAdapter adapter) throws SQLException {

@@ -9,13 +9,9 @@ import java.sql.SQLException;
  */
 public abstract class SqlBuilder {
 
-    public abstract void save(DataObj destObj, ISqlAdapter adapter) throws SQLException;
+    public abstract void save(DataObj destObj, ISqlAdapter adapter, boolean autoCommit) throws SQLException;
 
     public abstract void search(DataObj destObj, ISqlAdapter adapter) throws SQLException;
-
-    public abstract void save(DataObj destObj) throws SQLException;
-
-    public abstract void search(DataObj destObj) throws SQLException;
 
     public abstract String getTableScript(DataObj destObj);
 

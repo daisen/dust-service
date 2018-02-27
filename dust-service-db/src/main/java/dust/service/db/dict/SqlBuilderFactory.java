@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SqlBuilderFactory {
     public static SqlBuilder build() {
-        if (StringUtils.isEmpty(DictGlobalConfig.getSqlAdapter().getDbType())) {
+        if (DictGlobalConfig.getSqlAdapter() == null) {
             return new MySqlBuilder();
         }
 

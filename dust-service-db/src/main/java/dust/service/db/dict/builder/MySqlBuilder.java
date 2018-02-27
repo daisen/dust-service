@@ -24,11 +24,10 @@ public class MySqlBuilder extends SqlBuilder {
 
 
     @Override
-    public void save(DataObj destObj, ISqlAdapter adapter) throws SQLException {
-        boolean autoCommit = false;
+    public void save(DataObj destObj, ISqlAdapter adapter, boolean autoCommit) throws SQLException {
+
         if (adapter == null) {
             adapter = DictGlobalConfig.getSqlAdapter();
-            autoCommit = true;
         }
 
         if (adapter == null) {
@@ -146,21 +145,16 @@ public class MySqlBuilder extends SqlBuilder {
             adapter = DictGlobalConfig.getSqlAdapter();
         }
 
-        SqlCommand selectCmd = getSelectSqlCore(destObj);
         if (adapter == null) {
             throw new IllegalThreadStateException("current thread can not find dict sql adapter");
         }
 
+        SqlCommand selectCmd = getSelectSqlCore(destObj);
         DataTable dataTable = adapter.query(selectCmd);
         if (dataTable.size() > 0) {
             destObj.loadData(dataTable);
             destObj.getPageInfo().setTotalRows(selectCmd.getTotalRows());
         }
-    }
-
-    @Override
-    public void save(DataObj destObj) throws SQLException {
-        this.save(destObj, null);
     }
 
     private boolean checkIdRelationColumn(DataObj destObj, String tbName) {
@@ -368,12 +362,6 @@ public class MySqlBuilder extends SqlBuilder {
 //        });
 
         return cmd;
-    }
-
-
-    @Override
-    public void search(DataObj destObj) throws SQLException {
-        this.search(destObj, null);
     }
 
     @Override
