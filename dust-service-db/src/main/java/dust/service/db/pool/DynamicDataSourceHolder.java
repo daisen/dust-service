@@ -1,23 +1,25 @@
 package dust.service.db.pool;
 
+import dust.service.core.thread.LocalHolder;
+
 /**
  * 动态数据源切换类
  * 用于识别当前生效的数据源
  * @author huangshengtao
  */
 public class DynamicDataSourceHolder {
-    private static final ThreadLocal<DataSourceContext> DATASOURCE_LOCAL = new ThreadLocal<>();
+    private static final String DATASOURCE_LOCAL = "DATASOURCE_LOCAL";
 
     public static void setContext(DataSourceContext context) {
         if (context == null) {
             context = new DataSourceContext();
         }
 
-        DATASOURCE_LOCAL.set(context);
+        LocalHolder.get(DATASOURCE_LOCAL).set(context);
     }
 
     public static DataSourceContext getContext() {
-        DataSourceContext context = DATASOURCE_LOCAL.get();
+        DataSourceContext context = (DataSourceContext) LocalHolder.get(DATASOURCE_LOCAL).get();
         if (context == null) {
             context = new DataSourceContext();
         }

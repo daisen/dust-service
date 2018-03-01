@@ -1,5 +1,6 @@
 package dust.service.db;
 
+import dust.service.core.thread.LocalHolder;
 import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.sql.SqlAdapterContext;
 import org.slf4j.Logger;
@@ -17,15 +18,16 @@ import java.util.List;
  */
 @Component
 public class DbAdapterManager {
-    static Logger logger = LoggerFactory.getLogger(DbAdapterManager.class);
-
-    static ThreadLocal<SqlAdapterContext> localSqlAdapterContext = new ThreadLocal<>();
+    private static Logger logger = LoggerFactory.getLogger(DbAdapterManager.class);
+    //private static ThreadLocal<SqlAdapterContext> localSqlAdapterContext = new ThreadLocal<>();
+    private static String LOCAL_SQL_ADAPTER_CONTEXT = "DbAdapterManager.LOCAL_SQL_ADAPTER_CONTEXT";
 
     @Autowired
     ApplicationContext context;
 
     @Autowired
     DustDbProperties dustDbProperties;
+    private boolean inited;
 
     /**
      * 根据数据源名称获取对应的适配类
@@ -60,8 +62,13 @@ public class DbAdapterManager {
             adapter.init(dataSourceName);
 
             //压入线程，用于后续释放
-            if (dustDbProperties.isAutoAdapterDestroy() && localSqlAdapterContext.get() != null) {
-                localSqlAdapterContext.get().getAdapterList().add(adapter);
+            if (dustDbProperties.isAutoAdapterDestroy()) {
+                SqlAdapterContext ctx = (SqlAdapterContext) LocalHolder.get(LOCAL_SQL_ADAPTER_CONTEXT).get();
+                if (ctx == null) {
+                    ctx = new SqlAdapterContext();
+                    LocalHolder.get(LOCAL_SQL_ADAPTER_CONTEXT).set(ctx);
+                }
+                ctx.getAdapterList().add(adapter);
             }
             return adapter;
         } catch (Exception ex) {
@@ -72,21 +79,19 @@ public class DbAdapterManager {
     }
 
     /**
-     * 用于全局初始化操作
-     * 目前主要是对线程内的Adapter进行缓存的处理
-     * @apiNote 请配合<code>DbAdapterManager.destroy</code>使用
+     * 请在释放ThreadLocal资源前关闭连接
      */
-    public static void init() {
-        localSqlAdapterContext.set(new SqlAdapterContext());
-    }
-
     public static void destroy() {
-        List<ISqlAdapter> adapterList = localSqlAdapterContext.get().getAdapterList();
+        SqlAdapterContext ctx = (SqlAdapterContext) LocalHolder.get(LOCAL_SQL_ADAPTER_CONTEXT).get();
+        if (ctx == null) {
+            return;
+        }
+
+        List<ISqlAdapter> adapterList = ctx.getAdapterList();
         for(ISqlAdapter adapter : adapterList) {
             adapter.closeQuiet();
         }
 
         adapterList.clear();
-        localSqlAdapterContext.remove();
     }
 }

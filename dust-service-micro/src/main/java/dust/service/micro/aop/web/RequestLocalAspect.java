@@ -1,5 +1,6 @@
 package dust.service.micro.aop.web;
 
+import dust.service.core.thread.LocalHolder;
 import dust.service.core.util.BeanUtils;
 import dust.service.db.DbAdapterManager;
 import dust.service.db.dict.DictGlobalConfig;
@@ -20,9 +21,9 @@ import org.springframework.core.annotation.Order;
  */
 @Aspect
 @Order(3)
-public class DbAdapterAspect {
+public class RequestLocalAspect {
 
-    final static Logger logger = LoggerFactory.getLogger(DbAdapterAspect.class);
+    final static Logger logger = LoggerFactory.getLogger(RequestLocalAspect.class);
 
     @Pointcut("@annotation(dust.service.micro.annotation.DustMapping) ")
     public void dustMappingPointcut() {
@@ -38,7 +39,6 @@ public class DbAdapterAspect {
 
     @Around("dustMappingPointcut() || requestMappingPointcut() || customMappingPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        DbAdapterManager.init();
         if (DictGlobalConfig.isAutoInitAdapter()) {
             TenantRepository repository = (TenantRepository) BeanUtils.getBean("tenantRepository");
             if (repository == null) {
@@ -52,9 +52,7 @@ public class DbAdapterAspect {
             return joinPoint.proceed();
         } finally {
             DbAdapterManager.destroy();
-            if (DictGlobalConfig.isAutoInitAdapter()) {
-                DictGlobalConfig.removeSqlAdapter();
-            }
+            LocalHolder.remove();
         }
     }
 

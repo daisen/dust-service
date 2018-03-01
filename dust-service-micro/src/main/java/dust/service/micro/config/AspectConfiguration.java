@@ -1,7 +1,7 @@
 package dust.service.micro.config;
 
 import dust.service.micro.aop.logging.LoggingAspect;
-import dust.service.micro.aop.web.DbAdapterAspect;
+import dust.service.micro.aop.web.RequestLocalAspect;
 import dust.service.micro.aop.web.WebAspect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ public class AspectConfiguration {
     }
 
     @Bean
-    public DbAdapterAspect adapterAspect() {
-        return new DbAdapterAspect();
+    public RequestLocalAspect adapterAspect() {
+        return new RequestLocalAspect();
     }
 }

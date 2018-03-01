@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import dust.service.core.thread.LocalHolder;
 import dust.service.core.util.CamelNameUtils;
 import dust.service.db.dict.DataObj;
 import dust.service.db.dict.DataObjBuilder;
@@ -26,9 +27,8 @@ import java.util.Map;
  */
 public class DataObjContainer4Mysql implements IDataObjContainer {
     private Logger logger = LoggerFactory.getLogger(DataObjContainer4Mysql.class);
-
-    private final static ThreadLocal<ISqlAdapter> localSqlAdapter = new ThreadLocal<>();
-    private final static ThreadLocal<Map<String, JSONObject>> localSchemaJson = new ThreadLocal<>();
+    private final static String LOCAL_SQL_ADAPTER = "DataObjContainer4Mysql.localSqlAdapter";
+    private final static String LOCAL_SCHEMA_JSON = "DataObjContainer4Mysql.localSchemaJson";
     private ISqlAdapter sqlAdapter;
 
     public void setSqlAdapter(ISqlAdapter sqlAdapter) {
@@ -40,13 +40,15 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
             return sqlAdapter;
         }
 
+        ThreadLocal<ISqlAdapter> localSqlAdapter = LocalHolder.get(LOCAL_SQL_ADAPTER);
+
         ISqlAdapter adapter = localSqlAdapter.get();
         try {
             if (adapter == null || adapter.getConnection() == null) {
                 localSqlAdapter.remove();
 
                 adapter = DataObjBuilder.getSqlAdapter();
-                localSqlAdapter.set(adapter);
+                LocalHolder.get(LOCAL_SQL_ADAPTER).set(adapter);
                 if (!StringUtils.equals(localSqlAdapter.get().getDbType(), "mysql")) {
                     throw new DustDbRuntimeException("dict Container dbType not compatible");
                 }
@@ -210,6 +212,7 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
 
     private void saveSchemeJson(String app, String module, String key, JSONObject json) {
         String cacheKey = app + "_" + module + "_" + key;
+        ThreadLocal<Map<String, JSONObject>> localSchemaJson = LocalHolder.get(LOCAL_SCHEMA_JSON);
         Map<String, JSONObject> cache = localSchemaJson.get();
         if (cache == null) {
             localSchemaJson.set(Maps.newHashMap());
@@ -219,6 +222,7 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
     }
 
     private JSONObject getSchemaJson(String app, String module, String key) {
+        ThreadLocal<Map<String, JSONObject>> localSchemaJson = LocalHolder.get(LOCAL_SCHEMA_JSON);
         String cacheKey = app + "_" + module + "_" + key;
         Map<String, JSONObject> cache = localSchemaJson.get();
         if (cache == null) {

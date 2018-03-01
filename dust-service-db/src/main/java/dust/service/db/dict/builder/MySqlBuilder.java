@@ -15,13 +15,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static dust.service.db.dict.DictConstant.DEFAULT_VALUE_NOW;
+import static dust.service.db.dict.DictConstant.DEFAULT_VALUE_UPDATE;
 import static dust.service.db.dict.condition.OperationType.*;
 
 /**
  * @author huangshengtao on 2018-1-10.
  */
 public class MySqlBuilder extends SqlBuilder {
-
 
     @Override
     public void save(DataObj destObj, ISqlAdapter adapter, boolean autoCommit) throws SQLException {
@@ -149,7 +150,9 @@ public class MySqlBuilder extends SqlBuilder {
             throw new IllegalThreadStateException("current thread can not find dict sql adapter");
         }
 
+
         SqlCommand selectCmd = getSelectSqlCore(destObj);
+
         DataTable dataTable = adapter.query(selectCmd);
         if (dataTable.size() > 0) {
             destObj.loadData(dataTable);
@@ -246,8 +249,8 @@ public class MySqlBuilder extends SqlBuilder {
             DataObjColumn col = destObj.getColumn(i);
 
             if (col.isIgnore()
-                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW)
-                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
+                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_NOW)
+                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_UPDATE)) {
                 continue;
             }
 
@@ -318,8 +321,8 @@ public class MySqlBuilder extends SqlBuilder {
             DataObjColumn col = destObj.getColumn(i);
             if (col.isAutoIncrement()
                     || col.isIgnore()
-                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW)
-                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
+                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_NOW)
+                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_UPDATE)) {
                 continue;
             }
 
@@ -328,7 +331,7 @@ public class MySqlBuilder extends SqlBuilder {
                     sbCols.append(",");
                     sbValues.append(",");
                 }
-                sbCols.append(col.getColumnName());
+                sbCols.append("`" + col.getColumnName() + "`");
                 sbValues.append("${INDEX}");
 
                 if (StringUtils.isEmpty(col.getIdColumnName())) {
@@ -465,9 +468,9 @@ public class MySqlBuilder extends SqlBuilder {
         }
 
         if (!StringUtils.isEmpty(col.getDefaultValue())) {
-            if (col.getDataType() == DataType.DATE && StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW)) {
+            if (col.getDataType() == DataType.DATE && StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_NOW)) {
                 sbCol.append(" DEFAULT CURRENT_TIMESTAMP");
-            } else if (col.getDataType() == DataType.DATE && StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
+            } else if (col.getDataType() == DataType.DATE && StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_UPDATE)) {
                 sbCol.append(" DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
             } else {
                 sbCol.append(" DEFAULT ");
@@ -505,7 +508,7 @@ public class MySqlBuilder extends SqlBuilder {
             selectCmd.appendSql(".");
             selectCmd.appendSql(col.getColumnName());
             selectCmd.appendSql(" AS ");
-            selectCmd.appendSql(col.getColumnLabel());
+            selectCmd.appendSql("`" + col.getColumnLabel() + "`");
         }
 
         selectCmd.appendSql("\r\nFROM ");

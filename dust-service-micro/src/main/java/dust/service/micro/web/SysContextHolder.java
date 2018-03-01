@@ -1,22 +1,20 @@
 package dust.service.micro.web;
 
+import dust.service.core.thread.LocalHolder;
+
 /**
  * 系统参数信息的容器
  */
 @Deprecated
 public class SysContextHolder {
-    private static final ThreadLocal threadLocal = new ThreadLocal();
-
-    public static void clearContext() {
-        threadLocal.remove();
-    }
+    private static final String LOCAL = "SysContextHolder.local";
 
     public static Object getContext() {
-        return threadLocal.get();
+        return LocalHolder.get(LOCAL).get();
     }
 
     public static void setContext(Object var1) {
-        threadLocal.set(var1);
+        LocalHolder.get(LOCAL).set(var1);
     }
 
     public static Object createEmptyContext() {
