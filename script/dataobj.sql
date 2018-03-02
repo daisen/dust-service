@@ -98,7 +98,9 @@ CREATE TABLE `dataobj_module` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `master_id` bigint(20) unsigned NOT NULL,
   `module` char(20) NOT NULL,
   `description` text DEFAULT NULL,
-  PRIMARY KEY (`id`)  
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_app_module` (`master_id`,`module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
