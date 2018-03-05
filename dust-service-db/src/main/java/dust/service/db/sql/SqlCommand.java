@@ -378,12 +378,15 @@ public class SqlCommand {
         return str;
     }
 
+    /**
+     * 拼接Command，用于commandText以外的拼接
+     * 2018.3.5 移除commandText的拼接操作
+     * @param whereCmd
+     * @param useOrOperator
+     * @return
+     */
     public SqlCommand append(SqlCommand whereCmd, Boolean useOrOperator) {
         if (whereCmd == null) return this;
-
-        if (whereCmd.commandText.length() > 0 && whereCmd.commandType == CommandTypeEnum.Text) {
-            whereCmd.appendSql(commandText);
-        }
 
         this.appendWhere(whereCmd.getWhere(), useOrOperator);
         this.appendParameters(whereCmd.parameters);

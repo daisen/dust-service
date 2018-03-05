@@ -249,8 +249,8 @@ public class MySqlBuilder extends SqlBuilder {
             DataObjColumn col = destObj.getColumn(i);
 
             if (col.isIgnore()
-                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_NOW)
-                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_UPDATE)) {
+                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW)
+                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
                 continue;
             }
 
@@ -321,8 +321,8 @@ public class MySqlBuilder extends SqlBuilder {
             DataObjColumn col = destObj.getColumn(i);
             if (col.isAutoIncrement()
                     || col.isIgnore()
-                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_NOW)
-                    || StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_UPDATE)) {
+                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW)
+                    || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
                 continue;
             }
 
@@ -726,36 +726,34 @@ public class MySqlBuilder extends SqlBuilder {
         }
 
         if (condition.getSubConditions().size() > 0) {
-            SqlCommand otherCmd = new SqlCommand();
-            appendSubConditions(condition.getSubConditions(), otherCmd);
+            SqlCommand otherCmd = getSubConditionsCommand(condition.getSubConditions());
             Condition firstCondition = condition.getSubConditions().get(0);
             cmd.appendSql(firstCondition.isRequire() ? " AND " : " OR ");
-            cmd.appendSql(otherCmd.getCommandText());
+            cmd.appendSql(otherCmd.getWhere());
             cmd.appendParameters(otherCmd.getParameters());
         }
 
         //转化commandText为where
         cmd.resetWhere();
-        cmd.appendWhere(cmd.getCommandText());
+        cmd.appendWhere("(" + cmd.getCommandText() + ")");
         cmd.setCommandText("");
-
-
         return cmd;
     }
 
 
-    private void appendSubConditions(List<Condition> subConditions, SqlCommand cmd) {
+    private SqlCommand getSubConditionsCommand(List<Condition> subConditions) {
+        SqlCommand cmd = new SqlCommand();
         if (subConditions.size() == 0) {
-            return;
+            return cmd;
         }
 
-        cmd.appendSql("(");
         for (int i = 0; i < subConditions.size(); i++) {
             Condition condition = subConditions.get(i);
             SqlCommand subCmd = getConditionSql(condition);
             cmd.append(subCmd);
         }
-        cmd.appendSql(")");
+
+        return cmd;
     }
 
     private void appendSubTableNodeSql(BaseNode right, SqlCommand cmd) {
@@ -775,7 +773,9 @@ public class MySqlBuilder extends SqlBuilder {
             List<Condition> subConditions = right.getSubConditions();
             if (subConditions.size() > 0) {
                 cmd.appendSql(" WHERE ");
-                appendSubConditions(subConditions, cmd);
+                SqlCommand subCmd = getSubConditionsCommand(subConditions);
+                cmd.appendSql(subCmd.getWhere());
+                cmd.appendParameters(subCmd.getParameters());
             }
         }
     }
