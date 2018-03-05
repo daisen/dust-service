@@ -45,6 +45,10 @@ public class Converter {
             return new Date((Long) value);
         }
 
+        if (value instanceof String && StringUtils.isNumber((String)value)) {
+            return new Date(toLong(value));
+        }
+
         // 字符串格式的时间日期
         String strDate = toString(value);
         format = null == format ? "yyyy-MM-dd HH:mm:ss" : format;
