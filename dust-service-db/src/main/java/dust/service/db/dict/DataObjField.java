@@ -92,11 +92,11 @@ public class DataObjField {
             if (originValue != null) {
                 changeState();
             }
-        } else if (!value.equals(originValue)) {
+        } else if (!colVal.equals(originValue)) {
             changeState();
         }
 
-        this.value = value;
+        this.value = colVal;
     }
 
     private void changeState() {
