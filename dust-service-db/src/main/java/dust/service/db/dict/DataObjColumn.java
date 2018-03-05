@@ -38,7 +38,7 @@ public class DataObjColumn {
     //暂不启用
     private String relationTableName;
     private String relationColumnName;
-    private String idColumnName;
+    private String idColumnLabel;
 
     private List<Condition> conditions = Lists.newArrayList();
     private StringBuilder whereSql = new StringBuilder();
@@ -218,12 +218,12 @@ public class DataObjColumn {
         this.relationColumnName = relationColumnName;
     }
 
-    public String getIdColumnName() {
-        return idColumnName;
+    public String getIdColumnLabel() {
+        return idColumnLabel;
     }
 
-    public void setIdColumnName(String idColumnName) {
-        this.idColumnName = idColumnName;
+    public void setIdColumnLabel(String idColumnLabel) {
+        this.idColumnLabel = idColumnLabel;
     }
 
     public DataObjColumn parseCondition(String json) {
@@ -255,7 +255,7 @@ public class DataObjColumn {
         schemaJson.put("dataType", this.dataType);
         schemaJson.put("relationColumnName", this.relationColumnName);
         schemaJson.put("relationTableName", this.relationTableName);
-        schemaJson.put("idColumnName", this.idColumnName);
+        schemaJson.put("idColumnLabel", this.idColumnLabel);
         schemaJson.put("defaultValue", this.defaultValue);
         schemaJson.put("width", this.width);
         schemaJson.put("decimalDigits", this.decimalDigits);
@@ -278,7 +278,7 @@ public class DataObjColumn {
         dataColumn.primaryKey = this.primaryKey;
         dataColumn.required = this.required;
         dataColumn.mirrorColumnLabel = this.mirrorColumnLabel;
-        dataColumn.idColumnName = this.idColumnName;
+        dataColumn.idColumnLabel = this.idColumnLabel;
         dataColumn.relationColumnName = this.relationColumnName;
         dataColumn.relationTableName = this.relationTableName;
         dataColumn.defaultValue = this.defaultValue;
@@ -433,8 +433,8 @@ public class DataObjColumn {
             dataColumn.relationColumnName = Converter.toString(schema.get("relationColumnName"));
         }
 
-        if (schema.containsKey("idColumnName")) {
-            dataColumn.idColumnName = Converter.toString(schema.get("idColumnName"));
+        if (schema.containsKey("idColumnLabel")) {
+            dataColumn.idColumnLabel = Converter.toString(schema.get("idColumnLabel"));
         }
 
 

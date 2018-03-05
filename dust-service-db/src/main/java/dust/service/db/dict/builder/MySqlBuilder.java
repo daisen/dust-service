@@ -3,7 +3,6 @@ package dust.service.db.dict.builder;
 import com.google.common.collect.Lists;
 import dust.service.db.dict.condition.BaseNode;
 import dust.service.db.dict.condition.NodeType;
-import dust.service.db.dict.condition.OperationType;
 import dust.service.db.sql.DataTable;
 import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.sql.SqlCommand;
@@ -17,7 +16,6 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static dust.service.db.dict.DictConstant.DEFAULT_VALUE_NOW;
 import static dust.service.db.dict.DictConstant.DEFAULT_VALUE_UPDATE;
-import static dust.service.db.dict.condition.OperationType.*;
 
 /**
  * @author huangshengtao on 2018-1-10.
@@ -163,7 +161,7 @@ public class MySqlBuilder extends SqlBuilder {
     private boolean checkIdRelationColumn(DataObj destObj, String tbName) {
         for (int i = 0; i < destObj.getColumnSize(); i++) {
             DataObjColumn col = destObj.getColumn(i);
-            if (StringUtils.isNotEmpty(col.getIdColumnName()) && StringUtils.equals(col.getTableName(), tbName)) {
+            if (StringUtils.isNotEmpty(col.getIdColumnLabel()) && StringUtils.equals(col.getTableName(), tbName)) {
                 return true;
             }
         }
@@ -334,10 +332,10 @@ public class MySqlBuilder extends SqlBuilder {
                 sbCols.append("`" + col.getColumnName() + "`");
                 sbValues.append("${INDEX}");
 
-                if (StringUtils.isEmpty(col.getIdColumnName())) {
+                if (StringUtils.isEmpty(col.getIdColumnLabel())) {
                     colIndexes.add(i);
                 } else {
-                    colIndexes.add(destObj.findIdxByLabel(col.getIdColumnName()));
+                    colIndexes.add(destObj.findIdxByLabel(col.getIdColumnLabel()));
                 }
 
             }

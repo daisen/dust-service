@@ -142,7 +142,7 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
                 "  `column_label`,\n" +
                 "  `relation_table_name`,\n" +
                 "  `relation_column_name`,\n" +
-                "  `id_column_name`,\n" +
+                "  `id_column_label`,\n" +
                 "  `default_value`,\n" +
                 "  `data_type`,\n" +
                 "  `mirror_column_label`,\n" +

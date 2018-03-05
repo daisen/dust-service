@@ -40,7 +40,7 @@ CREATE TABLE `dataobj_column` (
   `column_label` char(50) NULL,
   `relation_table_name` char(50) NULL,
   `relation_column_name` char(50) NULL,
-  `id_column_name` char(50) NULL,
+  `id_column_label` char(50) NULL,
   `data_type` char(20) NOT NULL,
   `mirror_column_label` char(50) DEFAULT NULL,  
   `table_name` char(50) NOT NULL,
