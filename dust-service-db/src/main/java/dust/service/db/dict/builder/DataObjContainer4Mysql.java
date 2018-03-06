@@ -179,11 +179,11 @@ public class DataObjContainer4Mysql implements IDataObjContainer {
                 "  `gmt_create`,\n" +
                 "  `gmt_modified`,\n" +
                 "  `master_id`,\n" +
-                "  `tableName`,\n" +
+                "  `table_name`,\n" +
                 "  `relation_type`,\n" +
-                "  `columnName`,\n" +
-                "  `relationColumn`,\n" +
-                "  `relationWhere`,\n" +
+                "  `column_name`,\n" +
+                "  `relation_column`,\n" +
+                "  `relation_where`,\n" +
                 "  `follow_delete`,\n" +
                 "  `follow_insert`,\n" +
                 "  `follow_update`\n" +
