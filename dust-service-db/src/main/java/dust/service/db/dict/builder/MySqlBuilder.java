@@ -561,7 +561,7 @@ public class MySqlBuilder extends SqlBuilder {
                 }
 
                 if (onCmd.hasWhere()) {
-                    selectCmd.appendSql(" AND ");
+                    selectCmd.appendSql(" ON ");
                     selectCmd.appendSql(onCmd.getWhere());
                     selectCmd.appendParameters(onCmd.getParameters());
                 }
