@@ -60,7 +60,7 @@ public class DruidTemplate implements InitializingBean, DataSourceTemplate {
                 }
             }
 
-            getDefaultDataSource();
+            createDefaultDataSource();
         }
     }
 
@@ -128,14 +128,22 @@ public class DruidTemplate implements InitializingBean, DataSourceTemplate {
         return null;
     }
 
-    public DruidDataSource getDefaultDataSource() {
+    /**
+     * 创建默认数据源
+     * 当开启{@link DustDbProperties#isSingle()}时，支持默认数据源操作
+     * 当druid配置{@link DruidProperties}了数据库url，username，password时，将作为默认数据源
+     * @return
+     */
+    public DruidDataSource createDefaultDataSource() {
         //如果无法找到Spring的上下文，则直接返回null
         if (this.context == null) {
             return null;
         }
 
-        DruidDataSource cacheDs = cacheToDruidDataSource(DataSourceCache.getInstance().getDefault());
-        if (cacheDs != null) return cacheDs;
+        //如果没有开启单体应用，则不处理默认数据源
+        if (!dustDbProperties.isSingle()) {
+            return null;
+        }
 
         DruidDataSource ds = createInstance();
         if (StringUtils.isEmpty(ds.getUrl()) || StringUtils.isEmpty(ds.getUsername())
@@ -217,7 +225,7 @@ public class DruidTemplate implements InitializingBean, DataSourceTemplate {
 
     /**
      * 读取name对应的数据库处理类对应的Bean名称或者类名
-     * 当需要定制数据库的访问操作时，可配置自己的处理类，需继承{@link DataBaseImpl}
+     * 当需要定制数据库的访问操作时，可配置自己的处理类，需继承{@link com.hisense.dustdb.sql.DataBaseImpl}
      *
      * @param name
      * @return 如果没有找到匹配的，则返回空字符串""

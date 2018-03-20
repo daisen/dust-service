@@ -42,10 +42,17 @@ public class DataSourceCache {
      * @return
      */
     public DataSource get(String key) {
-        if (StringUtils.isEmpty(key) || StringUtils.equals(key, "default")) {
-            return getDefault();
+        DataSource ds = dataSourceMap.get(key);
+        if (ds != null) {
+            return ds;
         }
-        return dataSourceMap.get(key);
+
+        if (single) {
+            if (StringUtils.isEmpty(key) || StringUtils.equals(key, "default")) {
+                ds = getDefault();
+            }
+        }
+        return ds;
     }
 
     public DataSourceContext getContext(String key) {
@@ -59,12 +66,16 @@ public class DataSourceCache {
     public DataSourceCache set(String key, DataSource ds) {
         synchronized (dataSourceMap) {
             dataSourceMap.put(key, ds);
-            if (this.defaultDataSource == null) {
-                this.defaultDataSource = ds;
-            }
+            if (single) {
+                //第一个数据源作为默认数据源
+                if (this.defaultDataSource == null) {
+                    this.defaultDataSource = ds;
+                }
 
-            if (StringUtils.isEmpty(key) || StringUtils.equals(key, "default")) {
-                this.defaultDataSource = ds;
+                //如果数据源没有名字或者名字为default，则覆盖默认数据源
+                if (StringUtils.isEmpty(key) || StringUtils.equals(key, "default")) {
+                    this.defaultDataSource = ds;
+                }
             }
         }
 
@@ -88,10 +99,7 @@ public class DataSourceCache {
         return this;
     }
 
-
-
-
-    public DataSource getDefault() {
+    private DataSource getDefault() {
         return defaultDataSource;
     }
 

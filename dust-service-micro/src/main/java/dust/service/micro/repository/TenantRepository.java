@@ -31,12 +31,16 @@ public class TenantRepository {
         if(authentication != null && authentication instanceof DustAuthentication) {
             SysParam sysParam = ((DustAuthentication) authentication).getSysParam();
             if (sysParam == null || StringUtils.isEmpty(sysParam.getAppId()) || StringUtils.isEmpty(sysParam.getTenantId())) {
-                throw new DustMsException("服务公共参数异常");
+                throw new RepositoryException("服务公共参数异常");
             }
 
             return tenantAdapterManager.getAdapter(sysParam.getTenantId(), sysParam.getAppId());
         }
 
-        return dbAdapterManager.getAdapter(defaultSourceName);
+        ISqlAdapter adapter = dbAdapterManager.getAdapter(defaultSourceName);
+        if (adapter == null) {
+            throw new RepositoryException("没有找到当前用户对应的数据库");
+        }
+        return adapter;
     }
 }
