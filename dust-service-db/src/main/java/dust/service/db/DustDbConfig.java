@@ -1,6 +1,7 @@
 package dust.service.db;
 
 import dust.service.db.dict.DictGlobalConfig;
+import dust.service.db.pool.DataSourceCache;
 import dust.service.db.pool.DynamicDataSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,7 @@ public class DustDbConfig implements InitializingBean {
         DictGlobalConfig.setAutoInitAdapter(dustDbProperties.getDict().isAutoInitAdapter());
         DictGlobalConfig.setDataSourceName(dustDbProperties.getDict().getDataSourceName());
         DictGlobalConfig.setAllowColumnNameOutOfUnderscore(dustDbProperties.getDict().isAllowColumnNameOutOfUnderscore());
+
+        DataSourceCache.getInstance().setSingle(dustDbProperties.isSingle());
     }
 }

@@ -23,6 +23,15 @@ public class DustDbProperties {
     private boolean autoAdapterDestroy;
     private Tenant tenant = new Tenant();
     private Dict dict = new Dict();
+    private boolean single;
+
+    public boolean isSingle() {
+        return single;
+    }
+
+    public void setSingle(boolean single) {
+        this.single = single;
+    }
 
     public boolean isAutoAdapterDestroy() {
         return autoAdapterDestroy;

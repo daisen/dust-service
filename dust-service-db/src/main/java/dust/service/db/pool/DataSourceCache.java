@@ -21,9 +21,18 @@ public class DataSourceCache {
     private Map<String, DataSource> dataSourceMap = Maps.newHashMap();
     private DataSource defaultDataSource;
     private Map<String, DataSourceContext> dataSourceContextMap = Maps.newHashMap();
+    private boolean single;
 
-    public DataSourceCache() {
+    private DataSourceCache() {
 
+    }
+
+    public boolean isSingle() {
+        return single;
+    }
+
+    public void setSingle(boolean single) {
+        this.single = single;
     }
 
     /**
