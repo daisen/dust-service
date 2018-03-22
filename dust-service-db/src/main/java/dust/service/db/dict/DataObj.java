@@ -332,7 +332,7 @@ public class DataObj {
     public Table getTable(String tbName) {
         checkNotNull(tbName);
         for (Table t : tables) {
-            if (tbName.equals(t.getTableName())) {
+            if (StringUtils.equalsIgnoreCase(tbName, t.getTableName())) {
                 return t;
             }
         }

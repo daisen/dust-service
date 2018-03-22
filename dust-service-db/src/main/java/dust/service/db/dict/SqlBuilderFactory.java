@@ -1,6 +1,7 @@
 package dust.service.db.dict;
 
 import dust.service.db.dict.builder.MySqlBuilder;
+import dust.service.db.dict.builder.OracleBuilder;
 import dust.service.db.support.DataBaseFactory;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,6 +21,8 @@ public class SqlBuilderFactory {
         switch (dbType) {
             case DataBaseFactory.JdbcConstants.MYSQL:
                 return new MySqlBuilder();
+            case DataBaseFactory.JdbcConstants.ORACLE:
+                return new OracleBuilder();
         }
         return new MySqlBuilder();
     }

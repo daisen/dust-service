@@ -147,6 +147,6 @@ public class OracleDataBase extends DataBaseImpl {
 
     @Override
     public String getDbType() {
-        return DataBaseFactory.JdbcConstants.MYSQL;
+        return DataBaseFactory.JdbcConstants.ORACLE;
     }
 }
