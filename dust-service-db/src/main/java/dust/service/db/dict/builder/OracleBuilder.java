@@ -433,16 +433,16 @@ public class OracleBuilder extends SqlBuilder {
                     primaryKeys.append(",");
                 }
 
-                primaryKeys.append(col.getColumnName());
+                primaryKeys.append("\"" + col.getColumnName() + "\"");
             }
         }
 
         sb.append(",\r\n");
         sb.append("  CONSTRAINT");
         sb.append(" \"PK_" + destObj.getTableName() + "\"");
-        sb.append(" PRIMARY KEY (\"");
+        sb.append(" PRIMARY KEY (");
         sb.append(primaryKeys);
-        sb.append("\")");
+        sb.append(")");
 
         sb.append("\r\n");
         sb.append(");");
@@ -468,7 +468,7 @@ public class OracleBuilder extends SqlBuilder {
                 sbCol.append("clob");
                 break;
             case STRING:
-                if (col.getWidth() > 2000) {
+                if (col.getWidth() < 2000) {
                     sbCol.append("varchar2(");
                     sbCol.append(col.getWidth());
                     sbCol.append(")");
