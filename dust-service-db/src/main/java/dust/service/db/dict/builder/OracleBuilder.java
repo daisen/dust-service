@@ -501,11 +501,6 @@ public class OracleBuilder extends SqlBuilder {
                 break;
         }
 
-        if (col.isRequired()) {
-            sbCol.append(" NOT NULL");
-        } else if (StringUtils.isEmpty(col.getDefaultValue())) {
-            sbCol.append(" DEFAULT NULL");
-        }
 
         if (!StringUtils.isEmpty(col.getDefaultValue())) {
             if (col.getDataType() == DataType.DATE && StringUtils.equals(col.getDefaultValue(), DEFAULT_VALUE_NOW)) {
@@ -520,6 +515,11 @@ public class OracleBuilder extends SqlBuilder {
             }
 
         }
+
+        if (col.isRequired()) {
+            sbCol.append(" NOT NULL");
+        }
+
         return sbCol.toString();
     }
 
