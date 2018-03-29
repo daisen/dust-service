@@ -433,19 +433,22 @@ public class OracleBuilder extends SqlBuilder {
                     primaryKeys.append(",");
                 }
 
-                primaryKeys.append("\"" + col.getColumnName() + "\"");
+                primaryKeys.append(col.getColumnName());
             }
         }
 
-        sb.append(",\r\n");
-        sb.append("  CONSTRAINT");
-        sb.append(" \"PK_" + destObj.getTableName() + "\"");
-        sb.append(" PRIMARY KEY (");
-        sb.append(primaryKeys);
-        sb.append(")");
-
         sb.append("\r\n");
         sb.append(");");
+
+        //主键
+        sb.append("ALTER TABLE");
+        sb.append(destObj.getTableName());
+        sb.append("\r\n");
+        sb.append("  ADD CONSTRAINT");
+        sb.append(" PK_" + destObj.getTableName());
+        sb.append(" PRIMARY KEY (");
+        sb.append(primaryKeys);
+        sb.append(");\r\n");
 
         //序列
         sb.append("\r\n");
@@ -457,9 +460,9 @@ public class OracleBuilder extends SqlBuilder {
 
     private String getDbColumnType(DataObjColumn col) {
         StringBuilder sbCol = new StringBuilder();
-        sbCol.append("  \"");
+        sbCol.append(" ");
         sbCol.append(col.getColumnName());
-        sbCol.append("\" ");
+        sbCol.append(" ");
         switch (col.getDataType()) {
             case BINARY:
                 sbCol.append("blob");
