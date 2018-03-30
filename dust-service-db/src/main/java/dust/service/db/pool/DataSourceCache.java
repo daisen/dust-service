@@ -57,7 +57,7 @@ public class DataSourceCache {
 
     public DataSourceContext getContext(String key) {
         if (StringUtils.isEmpty(key)) {
-            return null;
+            return dataSourceContextMap.get("default");
         }
 
         return dataSourceContextMap.get(key);

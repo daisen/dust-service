@@ -141,6 +141,7 @@ public class DustDbProperties {
         private boolean autoInitAdapter = true;
         private boolean enableObjId = false;
         private boolean allowColumnNameOutOfUnderscore = true;
+        private String containerClass;
 
         public boolean isAllowColumnNameOutOfUnderscore() {
             return allowColumnNameOutOfUnderscore;
@@ -172,6 +173,14 @@ public class DustDbProperties {
 
         public void setEnableObjId(boolean enableObjId) {
             this.enableObjId = enableObjId;
+        }
+
+        public String getContainerClass() {
+            return containerClass;
+        }
+
+        public void setContainerClass(String containerClass) {
+            this.containerClass = containerClass;
         }
     }
 
