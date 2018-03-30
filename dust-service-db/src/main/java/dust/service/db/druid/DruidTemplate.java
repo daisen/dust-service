@@ -59,9 +59,9 @@ public class DruidTemplate implements InitializingBean, DataSourceTemplate {
                     throw new DustDbRuntimeException("数据库无法访问" + db.toString());
                 }
             }
-
-            createDefaultDataSource();
         }
+
+        createDefaultDataSource();
     }
 
     /**
@@ -225,7 +225,7 @@ public class DruidTemplate implements InitializingBean, DataSourceTemplate {
 
     /**
      * 读取name对应的数据库处理类对应的Bean名称或者类名
-     * 当需要定制数据库的访问操作时，可配置自己的处理类，需继承{@link com.hisense.dustdb.sql.DataBaseImpl}
+     * 当需要定制数据库的访问操作时，可配置自己的处理类，需继承{@link dust.service.db.sql.DataBaseImpl}
      *
      * @param name
      * @return 如果没有找到匹配的，则返回空字符串""

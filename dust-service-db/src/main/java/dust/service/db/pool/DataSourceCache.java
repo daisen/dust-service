@@ -5,6 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * 数据源缓存类，简单的缓存处理，用于缓存当前运行时使用过的数据源，避免类创建的开销
@@ -21,19 +24,12 @@ public class DataSourceCache {
     private Map<String, DataSource> dataSourceMap = Maps.newHashMap();
     private DataSource defaultDataSource;
     private Map<String, DataSourceContext> dataSourceContextMap = Maps.newHashMap();
-    private boolean single;
+    private final String DEFAULT = "default";
+    private ReentrantLock lock = new ReentrantLock();
 
     private DataSourceCache() {
-
     }
 
-    public boolean isSingle() {
-        return single;
-    }
-
-    public void setSingle(boolean single) {
-        this.single = single;
-    }
 
     /**
      * 通过参数key获取对应的数据源（连接池）
@@ -42,22 +38,16 @@ public class DataSourceCache {
      * @return
      */
     public DataSource get(String key) {
-        DataSource ds = dataSourceMap.get(key);
-        if (ds != null) {
-            return ds;
+        if (StringUtils.isEmpty(key)) {
+            key = DEFAULT;
         }
 
-        if (single) {
-            if (StringUtils.isEmpty(key) || StringUtils.equals(key, "default")) {
-                ds = getDefault();
-            }
-        }
-        return ds;
+        return dataSourceMap.get(key);
     }
 
     public DataSourceContext getContext(String key) {
         if (StringUtils.isEmpty(key)) {
-            return dataSourceContextMap.get("default");
+            key = DEFAULT;
         }
 
         return dataSourceContextMap.get(key);
@@ -65,42 +55,30 @@ public class DataSourceCache {
 
     public DataSourceCache set(String key, DataSource ds) {
         synchronized (dataSourceMap) {
-            dataSourceMap.put(key, ds);
-            if (single) {
-                //第一个数据源作为默认数据源
-                if (this.defaultDataSource == null) {
-                    this.defaultDataSource = ds;
-                }
-
-                //如果数据源没有名字或者名字为default，则覆盖默认数据源
-                if (StringUtils.isEmpty(key) || StringUtils.equals(key, "default")) {
-                    this.defaultDataSource = ds;
-                }
+            if (StringUtils.isEmpty(key)) {
+                key = DEFAULT;
             }
+
+            dataSourceMap.put(key, ds);
         }
 
         return this;
     }
 
     public DataSourceCache set(DataSourceContext key, DataSource ds) {
-        synchronized (dataSourceMap) {
+        checkNotNull(key);
+        lock.lock();
+        try {
+            if (StringUtils.isEmpty(key.getName())) {
+                key.setName(DEFAULT);
+            }
+
             dataSourceMap.put(key.getName(), ds);
             dataSourceContextMap.put(key.getName(), key);
-
-            if (this.defaultDataSource == null) {
-                this.defaultDataSource = ds;
-            }
-
-            if (StringUtils.isEmpty(key.getName()) || StringUtils.equals(key.getName(), "default")) {
-                this.defaultDataSource = ds;
-            }
+        } finally {
+            lock.unlock();
         }
 
         return this;
     }
-
-    private DataSource getDefault() {
-        return defaultDataSource;
-    }
-
 }

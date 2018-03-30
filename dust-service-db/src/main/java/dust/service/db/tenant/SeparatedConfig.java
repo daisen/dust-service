@@ -30,7 +30,7 @@ public class SeparatedConfig {
 
     static Logger logger = LoggerFactory.getLogger(SeparatedConfig.class);
 
-    private Boolean inited = new Boolean(false);
+    private Boolean inited = Boolean.FALSE;
 
     @Autowired
     DustDbProperties dustDbProperties;
