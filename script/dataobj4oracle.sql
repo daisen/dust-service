@@ -47,7 +47,7 @@ CREATE TABLE dataobj_column (
   width number(19)  DEFAULT 0 NOT NULL,
   decimal_digits number(19)  DEFAULT 0 NOT NULL,
   is_required number(1)  DEFAULT 0 NOT NULL,
-  is_ number(1)  DEFAULT 0 NOT NULL,
+  is_auto_increment number(1)  DEFAULT 0 NOT NULL,
   constraint PK_dataobj_column PRIMARY KEY (id)
 ) ; 
 
