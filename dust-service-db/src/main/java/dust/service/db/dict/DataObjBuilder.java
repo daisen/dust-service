@@ -31,19 +31,20 @@ public class DataObjBuilder {
         if (this.inited) {
             return;
         }
-
-        this.inited = true;
-
         String clzName = DictGlobalConfig.getContainerClass();
         if (StringUtils.isNotEmpty(clzName)) {
             Object containerObj = BeanUtils.getBean(clzName);
-            if (containerObj == null || containerObj instanceof IDataObjContainer) {
-                throw new DustDbRuntimeException("container class not compatible");
+            if (containerObj == null || !(containerObj instanceof IDataObjContainer)) {
+                containerObj = BeanUtils.getClassByName(clzName);
+                if (containerObj == null || !(containerObj instanceof IDataObjContainer)) {
+                    throw new DustDbRuntimeException("container class not compatible");
+                }
             }
             instance.dataObjContainer = (IDataObjContainer) containerObj;
         } else {
             instance.dataObjContainer = new DataObjContainer4Mysql();
         }
+        this.inited = true;
     }
 
     public static ISqlAdapter getSqlAdapter() {

@@ -1,8 +1,8 @@
 package dust.service.db;
 
+import dust.service.core.util.BeanUtils;
 import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.tenant.DbManager;
-import dust.service.core.util.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 租户数据适配管理器
+ *
  * @author huangshengtao
  */
 @Component
@@ -28,31 +29,37 @@ public class TenantAdapterManager {
     /**
      * 通过租户或者App返回数据库适配器
      * appId通常对应一个产品，加上租户信息可以返回租户下的App业务数据适配器
+     *
      * @param tenantId
      * @param appId
      * @return
      */
     public ISqlAdapter getAdapter(String tenantId, String appId) {
         if (!dustDbProperties.getTenant().isEnable()) {
-            return  null;
+            return dbAdapterManager.getAdapter(null);
         }
 
         return dbManager.getAdapter(tenantId, appId);
     }
 
+    public boolean isSingle() {
+        return dustDbProperties.isSingle();
+    }
+
     /**
      * 获取租户的管理适配器
-     * @see #getAdapter(String, String)
-     * 通常返回App业务Schema所属数据库组（实例）的管理账户
-     * 如果App没有配置group，则定位租户的默认group
+     *
      * @param tenantId
      * @param appId
      * @return
      * @throws Exception
+     * @see #getAdapter(String, String)
+     * 通常返回App业务Schema所属数据库组（实例）的管理账户
+     * 如果App没有配置group，则定位租户的默认group
      */
     public ISqlAdapter getAdapterAdmin(String tenantId, String appId) {
         if (!dustDbProperties.getTenant().isEnable()) {
-            return  null;
+            return null;
         }
 
         if (!dustDbProperties.getTenant().isAdmin()) {
@@ -64,11 +71,12 @@ public class TenantAdapterManager {
 
     /**
      * 获取存放租户信息的服务器，需开发权限才能操作
+     *
      * @return
      */
     public ISqlAdapter getTenantConfigAdapter() {
         if (!dustDbProperties.getTenant().isEnable()) {
-            return  null;
+            return null;
         }
 
         if (!dustDbProperties.getTenant().isAdmin()) {

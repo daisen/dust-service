@@ -156,20 +156,6 @@ public class SqlAdapterImpl implements ISqlAdapter {
 
         this.name = datasourceName;
 
-        DataSourceContext ctx = DataSourceCache.getInstance().getContext(this.name);
-        if (ctx != null) {
-            if (StringUtils.isNoneEmpty(ctx.getDataBase())) {
-                dataBase = (IDataBase) this.context.getBean(ctx.getDataBase());
-            }
-            if (dataBase == null) {
-                dataBase = DataBaseFactory.create(ctx.getUrl());
-            }
-        }
-
-        if (dataBase == null) {
-            dataBase = DataBaseFactory.create(null);
-        }
-
         try {
             DataSource ds = dataSourceTemplate.getDataSource(name);
             if (ds == null) {
@@ -177,6 +163,21 @@ public class SqlAdapterImpl implements ISqlAdapter {
             }
             connection = ds.getConnection();
             openTransaction();
+
+            DataSourceContext ctx = DataSourceCache.getInstance().getContext(this.name);
+            if (ctx != null) {
+                if (StringUtils.isNoneEmpty(ctx.getDataBase())) {
+                    dataBase = (IDataBase) this.context.getBean(ctx.getDataBase());
+                }
+                if (dataBase == null) {
+                    dataBase = DataBaseFactory.create(ctx.getUrl());
+                }
+            }
+
+            if (dataBase == null) {
+                dataBase = DataBaseFactory.create(null);
+            }
+
         } catch (Exception ex) {
             closeQuiet();
             throw ex;

@@ -26,6 +26,11 @@ public class TenantRepository {
     DbAdapterManager dbAdapterManager;
 
     public ISqlAdapter getAdapter(String defaultSourceName) throws DustMsException {
+        //单体应用使用DbAdapterManager的逻辑
+        if (tenantAdapterManager.isSingle()) {
+            return dbAdapterManager.getAdapter(defaultSourceName);
+        }
+
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if(authentication != null && authentication instanceof DustAuthentication) {

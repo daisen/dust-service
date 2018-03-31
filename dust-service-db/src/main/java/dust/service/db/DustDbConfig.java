@@ -35,7 +35,6 @@ public class DustDbConfig implements InitializingBean {
         DictGlobalConfig.setAutoInitAdapter(dustDbProperties.getDict().isAutoInitAdapter());
         DictGlobalConfig.setDataSourceName(dustDbProperties.getDict().getDataSourceName());
         DictGlobalConfig.setAllowColumnNameOutOfUnderscore(dustDbProperties.getDict().isAllowColumnNameOutOfUnderscore());
-
-        DataSourceCache.getInstance().setSingle(dustDbProperties.isSingle());
+        DictGlobalConfig.setContainerClass(dustDbProperties.getDict().getContainerClass());
     }
 }

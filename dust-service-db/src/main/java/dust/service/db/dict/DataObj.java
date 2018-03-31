@@ -658,7 +658,7 @@ public class DataObj {
     }
 
     private void save(ISqlAdapter adapter, boolean autoCommit) throws SQLException {
-        SqlBuilderFactory.build().save(this, adapter, autoCommit);
+        SqlBuilderFactory.build(adapter).save(this, adapter, autoCommit);
         this.acceptChanges();
     }
 
@@ -738,7 +738,7 @@ public class DataObj {
     }
 
     public void search(ISqlAdapter adapter) throws SQLException {
-        SqlBuilderFactory.build().search(this, adapter);
+        SqlBuilderFactory.build(adapter).search(this, adapter);
     }
 
     //数据交互结束

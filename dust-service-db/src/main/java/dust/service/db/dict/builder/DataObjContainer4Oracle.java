@@ -71,7 +71,7 @@ public class DataObjContainer4Oracle implements IDataObjContainer {
 
             obj.parseJson(jsonOfObj);
         } catch (SQLException sqle) {
-            throw new DustDbRuntimeException("DataObjContainer4Oracle throw sql exception", sqle);
+            throw new DustDbRuntimeException("DataObjContainer4Oracle throw sql exception:" + sqle.getMessage(), sqle);
         }
 
         return obj;
@@ -92,7 +92,7 @@ public class DataObjContainer4Oracle implements IDataObjContainer {
                 "  conditions,\n" +
                 "  fix_condition,\n" +
                 "  orders,\n" +
-                "  start,\n" +
+                "  start_index,\n" +
                 "  page_size,\n" +
                 "  fix_where_sql,\n" +
                 "  order_by_sql,\n" +
@@ -105,7 +105,12 @@ public class DataObjContainer4Oracle implements IDataObjContainer {
                 "AND (id = :id OR alias=:alias)");
         masterCmd.setParameter("app", app);
         masterCmd.setParameter("module", module);
-        masterCmd.setParameter("id", key);
+        if (StringUtils.isNumeric(key)) {
+            masterCmd.setParameter("id", key);
+        } else {
+            masterCmd.setParameter("id", null);
+        }
+
         masterCmd.setParameter("alias", key);
 
         DataTable dt = dictSqlAdapter.query(masterCmd);
@@ -117,7 +122,7 @@ public class DataObjContainer4Oracle implements IDataObjContainer {
         JSONObject jsonOfObj = row2CamelJson(dr);
 
         JSONObject p = new JSONObject();
-        p.put("start", dr.get("start"));
+        p.put("start", dr.get("start_index"));
         p.put("pageSize", dr.get("page_size"));
         jsonOfObj.put("pageInfo", p);
 
