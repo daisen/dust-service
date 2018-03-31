@@ -1,11 +1,13 @@
 package dust.service.db;
 
 import com.google.common.collect.Lists;
+import dust.service.TestApplication;
 import dust.service.db.druid.DruidTemplate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.Connection;
@@ -16,10 +18,12 @@ import java.util.List;
 
 /**
  * 测试Druid连接池性能
+ *
  * @author huangshengtao
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = TestApplication.class)
+@TestPropertySource(locations = "classpath:application.properties")
 public class DruidTemplateTest {
     @Autowired
     DruidTemplate druidTemplate;
@@ -28,7 +32,7 @@ public class DruidTemplateTest {
     public void testConnect() throws SQLException, InterruptedException {
 
         List<Connection> lists = Lists.newArrayList();
-        for (int i = 0; i < 150; i ++) {
+        for (int i = 0; i < 150; i++) {
             Connection connection = druidTemplate.getConnection("myTest");
             connection.setAutoCommit(true);
             PreparedStatement ps = connection.prepareStatement("SELECT id from sys_role");
@@ -49,4 +53,23 @@ public class DruidTemplateTest {
         }
 
     }
+
+    @Test
+    public void testOracleJdbc() throws SQLException {
+        //jdbc:oracle:thin:@//111.198.136.108:1521/orcl
+        Connection connection = druidTemplate.getConnection("oracle");
+        connection.setAutoCommit(true);
+        PreparedStatement ps = connection.prepareStatement("SELECT sysdate from dual");
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            System.out.println(rs.getString("sysdate"));
+            while (rs.next()) {
+                System.out.println(rs.getString("sysdate"));
+            }
+        } else {
+            System.out.println("null");
+        }
+        rs.close();
+    }
+
 }

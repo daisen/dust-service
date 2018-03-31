@@ -59,9 +59,9 @@
             <version>${fastjson.version}</version>
         </dependency>
         <dependency>
-            <groupId>oracle</groupId>
-            <artifactId>ojdbc</artifactId>
-            <version>${ojdbc.version}</version>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
