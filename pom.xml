@@ -29,7 +29,7 @@
         <guava.version>21.0</guava.version>
         <lang3.version>3.5</lang3.version>
         <hazelcast.version>3.6.5</hazelcast.version>
-        <dust.version>1.0.0</dust.version>
+        <dust.version>1.0.3</dust.version>
     </properties>
 
     <parent>
