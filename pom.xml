@@ -29,7 +29,6 @@
         <guava.version>21.0</guava.version>
         <lang3.version>3.5</lang3.version>
         <hazelcast.version>3.6.5</hazelcast.version>
-        <dust.version>1.0.3</dust.version>
     </properties>
 
     <parent>
@@ -99,17 +98,17 @@
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-core</artifactId>
-                <version>${dust.version}</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-db</artifactId>
-                <version>${dust.version}</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-micro</artifactId>
-                <version>${dust.version}</version>
+                <version>1.0.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

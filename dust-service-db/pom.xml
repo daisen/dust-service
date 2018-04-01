@@ -6,7 +6,7 @@
 
     <groupId>dust</groupId>
     <artifactId>service-db</artifactId>
-    <version>${dust.version}</version>
+    <version>1.0.3</version>
     <developers>
         <developer>
             <id>huangshengtao</id>
