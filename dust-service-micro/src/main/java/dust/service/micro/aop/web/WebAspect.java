@@ -82,6 +82,7 @@ public class WebAspect {
                         break;
                     case "DataRow":
                         jsonResult.put("data", ((DataRow)result).toJSON());
+                        break;
                     default:
                         jsonResult.put("data", result);
 
