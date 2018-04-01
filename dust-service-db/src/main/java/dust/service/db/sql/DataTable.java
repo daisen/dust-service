@@ -1,5 +1,6 @@
 package dust.service.db.sql;
 
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -52,6 +53,14 @@ public class DataTable {
 
     public Integer size() {
         return this.rows.size();
+    }
+
+    public JSONArray toDataJSON() {
+        JSONArray arr = new JSONArray();
+        for (DataRow r : rows) {
+            arr.add(r.toJSON());
+        }
+        return arr;
     }
 
     public void destroy() {

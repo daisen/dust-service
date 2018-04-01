@@ -3,6 +3,8 @@ package dust.service.micro.aop.web;
 import com.alibaba.fastjson.JSONObject;
 import dust.service.db.dict.DataObj;
 import dust.service.db.dict.DataObjRow;
+import dust.service.db.sql.DataRow;
+import dust.service.db.sql.DataTable;
 import dust.service.micro.config.Constants;
 import dust.service.micro.util.DbLogUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -67,14 +69,18 @@ public class WebAspect {
                     case "DataObj":
                         DataObj dataObj = (DataObj) result;
                         if (dataObj.getPageInfo().getPageSize() > 0) {
-                            jsonResult.put("data", dataObj.toPageDataJson());
+                            jsonResult.put("data", dataObj.toPageDataJSON());
                         } else {
-                            jsonResult.put("data", dataObj.toDataJson());
+                            jsonResult.put("data", dataObj.toDataJSON());
                         }
                         break;
                     case "DataObjRow":
                         jsonResult.put("data", ((DataObjRow) result).toJSON());
                         break;
+                    case "DataTable":
+                        jsonResult.put("data", ((DataTable)result).toDataJSON());
+                    case "DataRow":
+                        jsonResult.put("data", ((DataRow)result).toJSON());
                     default:
                         jsonResult.put("data", result);
 

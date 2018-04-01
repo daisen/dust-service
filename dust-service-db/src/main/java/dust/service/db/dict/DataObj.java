@@ -310,7 +310,7 @@ public class DataObj {
         return this.rows;
     }
 
-    public JSONArray toDataJson() {
+    public JSONArray toDataJSON() {
         JSONArray jsonArray = new JSONArray();
         for (DataObjRow r : rows) {
             jsonArray.add(r.toJSON());
@@ -318,10 +318,10 @@ public class DataObj {
         return jsonArray;
     }
 
-    public JSONObject toPageDataJson() {
+    public JSONObject toPageDataJSON() {
         JSONObject pageJson = new JSONObject();
         pageJson.put("size", this.getPageInfo().getTotalRows());
-        pageJson.put("page", this.toDataJson());
+        pageJson.put("page", this.toDataJSON());
         return pageJson;
     }
 

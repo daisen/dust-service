@@ -1,6 +1,7 @@
 package dust.service.db.sql;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import dust.service.core.util.Converter;
 
@@ -81,6 +82,11 @@ public class DataRow {
         }
     }
 
+    public JSONObject toJSON() {
+        JSONObject json = new JSONObject();
+        json.putAll(this.data);
+        return json;
+    }
 
     public Map toMap() {
         return Maps.newHashMap(this.data);
