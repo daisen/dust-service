@@ -173,7 +173,7 @@ public class DbUtils {
                 return Converter.toString(orginDate);
             }
 
-            if (fieldClassName.contains("CLOB")) {// "java.sql.Clob"
+            if (fieldClassName.equals("java.sql.Clob")) {// "java.sql.Clob"
 
                 Clob clob = rs.getClob(index);
                 if (clob != null) {
@@ -183,7 +183,7 @@ public class DbUtils {
                 }
             }
 
-            if (fieldClassName.contains("BLOB")) {// java.sql.Blob
+            if (fieldClassName.equals("java.sql.Blob")) {// java.sql.Blob
                 Blob blob = rs.getBlob(index);
                 if (blob != null) {
                     byte[] bytes = blob.getBytes(1, (int) blob.length());
