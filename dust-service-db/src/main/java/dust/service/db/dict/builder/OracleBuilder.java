@@ -138,12 +138,13 @@ public class OracleBuilder extends SqlBuilder {
         Map<DataObjColumn, List<Integer>> mapCol = Maps.newHashMap();
         for (int i = 0; i < destObj.getColumnSize(); i++) {
             DataObjColumn col = destObj.getColumn(i);
-            if (col.isAutoIncrement()) {
+            if (!StringUtils.equalsIgnoreCase(col.getTableName(), destObj.getTableName())) {
                 Table t = destObj.getTable(col.getTableName());
                 if (!t.getFollowInsert()) {
                     continue;
                 }
-
+            }
+            if (col.isAutoIncrement()) {
                 mapCol.put(col, getAutoIncrementIds(adapter, col.getTableName(), listInsertRow.size()));
             }
         }
