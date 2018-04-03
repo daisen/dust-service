@@ -3,6 +3,10 @@ package dust.service.db;
 import com.google.common.collect.Lists;
 import dust.service.TestApplication;
 import dust.service.db.druid.DruidTemplate;
+import dust.service.db.sql.DataTable;
+import dust.service.db.sql.SqlCommand;
+import dust.service.db.support.oracle.OracleDataBase;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +74,23 @@ public class DruidTemplateTest {
             System.out.println("null");
         }
         rs.close();
+    }
+
+    @Test
+    public void testNewSqlCommand() throws SQLException {
+        SqlCommand cmd = new SqlCommand();
+        cmd.appendSql("SELECT * FROM dataobj");
+        cmd.appendWhere("id=#{INDEX}");
+        cmd.appendParameter(1);
+        cmd.appendWhere("alias=${INDEX}");
+        cmd.appendParameter("dataobj");
+        Connection connection = druidTemplate.getConnection("oracle");
+        connection.setAutoCommit(true);
+
+        OracleDataBase dataBase = new OracleDataBase();
+        dataBase.setConnection(connection);
+        DataTable dt = dataBase.query(cmd);
+        Assert.assertTrue(dt.size() == 1);
     }
 
 }

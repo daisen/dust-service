@@ -17,8 +17,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * 数据库Sql命令，dustdb不推荐使用拼接Sql的方式进行数据操作。
- * 使用SqlCommand的sql加上参数的方式来访问数据库，一是提高效率的同时，也可以防止Sql注入
+ * 数据库Sql命令，dustdb不推荐使用拼接Sql的方式进行数据操作。<br/>
+ * 使用SqlCommand的sql加上参数的方式来访问数据库，一是提高效率的同时，也可以防止Sql注入<br/>
+ * 推荐使用参数化的sql书写方式，各个数据库对参数化的SQL语句都有优化，同时也可以避免书写错误或者SQL注入的问题<br/>
+ *
+ * {@link #getJdbcSql()} 返回相应的执行Sql语句，{@link #getJdbcParameters()}返回执行语句的参数<br/>
+ *  1.0.2018040301版本之后支持如果没有设置parameter，默认表示执行sql不需要对参数进行处理，即:key, #{key}, @{key}都不会替换为?<br/>
  *
  * @author huangshengtao
  */
@@ -172,7 +176,7 @@ public class SqlCommand {
 
     /**
      * 获取jdbc参数列表，jdbc使用？作为参数占位符
-     * 需配合getJdbcSql使用
+     * 需配合{@link SqlCommand#getJdbcSql()} 使用
      *
      * @return
      */
@@ -182,37 +186,48 @@ public class SqlCommand {
 
     /**
      * 获取按照Sql语句执行所需的jdbc参数
+     * {@link #getJdbcSql()}
      *
      * @param item
      * @return
      */
     private Object[] getJdbcParameters(Map<String, Object> item) {
         List<Object> params = new ArrayList<>();
-        String str = combineSql();
-        Matcher m = patterns.matcher(str);
-        int psIndex = 0;
-        while (m.find()) {
-            String key = getRegexKey(m);
-            Object temp;
-            if (INDEX_KEY.equals(key)) {
-                temp = item.get("" + psIndex);
-            } else if (item.containsKey(key)){
-                temp = item.get(key);
+        if (parametersList.size() > 0 && parameters.size() > 0) {
+            if (keys.size() > 0) {
+                for (String key : keys) {
+                    params.add(item.get(key));
+                }
             } else {
-                throw new DustDbRuntimeException(m.group(1) + " 缺失参数值");
+                String str = combineSql();
+                Matcher m = patterns.matcher(str);
+                int psIndex = 0;
+                while (m.find()) {
+                    String key = getRegexKey(m);
+                    Object temp;
+                    if (INDEX_KEY.equals(key)) {
+                        temp = item.get("" + psIndex);
+                    } else if (item.containsKey(key)) {
+                        temp = item.get(key);
+                    } else {
+                        throw new DustDbRuntimeException(m.group(1) + " 缺失参数值");
+                    }
+                    params.add(temp);
+                    psIndex++;
+                }
             }
-            params.add(temp);
-            psIndex++;
         }
         return params.toArray();
     }
 
     private String getRegexKey(Matcher m) {
         char firstCh = m.group().charAt(0);
-        String key;
+        String key = null;
         if (firstCh == ':') {
             key = m.group(1);
-        } else {
+        } else if (firstCh == '#') {
+            key = m.group(2);
+        } else if (firstCh == '$') {
             key = m.group(3);
         }
 
@@ -328,7 +343,7 @@ public class SqlCommand {
 //
 //        return str;
 
-        return getJdbcExecuteSql(val-> {
+        return getJdbcExecuteSql(val -> {
             return "?";
         });
     }
@@ -343,9 +358,20 @@ public class SqlCommand {
         return srcGroup;*/
     }
 
+    /**
+     * 获取执行sql
+     * {@link #getJdbcParameters()}
+     *
+     * @param sqlFunc
+     * @return
+     */
     public String getJdbcExecuteSql(Function<Object, String> sqlFunc) {
         keys.clear();
         String str = combineSql();
+        if (parametersList.size() == 0 && parameters.size() == 0) {
+            return str;
+        }
+
         Matcher m = patterns.matcher(str);
         int psIndex = 0;
         while (m.find()) {
@@ -354,7 +380,7 @@ public class SqlCommand {
             if (INDEX_KEY.equals(key)) {
                 temp = parameters.get("" + psIndex);
                 keys.add("" + psIndex);
-            } else if (parameters.containsKey(key)){
+            } else if (parameters.containsKey(key)) {
                 temp = parameters.get(key);
                 keys.add(key);
             } else {
@@ -381,6 +407,7 @@ public class SqlCommand {
     /**
      * 拼接Command，用于commandText以外的拼接
      * 2018.3.5 移除commandText的拼接操作
+     *
      * @param whereCmd
      * @param useOrOperator
      * @return
@@ -431,7 +458,7 @@ public class SqlCommand {
         int len = parameters.size();
         int srcLen = ps.size();
 
-        for(Map.Entry<String ,Object> entry : ps.entrySet()) {
+        for (Map.Entry<String, Object> entry : ps.entrySet()) {
             if (StringUtils.isNumeric(entry.getKey())) {
                 Integer intKey = Converter.toInteger(entry.getKey());
                 if (intKey >= srcLen) {
