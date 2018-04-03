@@ -31,13 +31,13 @@ public class OracleDataBase extends DataBaseImpl {
             return super.queryRowSet(cmd);
         }
 
-        if (cmd.getTotalRows() <= 0) {
-            cmd.setTotalRows(getTotalRows(cmd));
-        }
-
         String execSql = cmd.getJdbcSql();
         Object[] params = cmd.getJdbcParameters();
         if (cmd.getPageSize() > 0) {
+            if (cmd.getTotalRows() <= 0) {
+                cmd.setTotalRows(getTotalRows(cmd));
+            }
+
             execSql = "select * from(select row_.*,rownum rownum_ from(" + execSql
                     + ")row_ )  where rownum_ >= ? and  rownum_ <= ?";
 

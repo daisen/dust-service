@@ -204,10 +204,11 @@ public class OracleBuilder extends SqlBuilder {
         checkNotNull(tbName);
 
         SqlCommand cmd = new SqlCommand();
+        cmd.setTotalRows(len);
         cmd.appendSql("SELECT");
         cmd.appendSql(" SEQ_" + tbName);
         cmd.appendSql(".nextval AS ID");
-        cmd.appendSql("FROM dual CONNECT BY rownum <=");
+        cmd.appendSql(" FROM dual CONNECT BY rownum <=");
         cmd.appendSql(len);
 
         DataTable dt = adapter.query(cmd);

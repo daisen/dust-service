@@ -26,13 +26,12 @@ public class MySqlDataBase extends DataBaseImpl {
             return super.queryRowSet(cmd);
         }
 
-        if (cmd.getPageSize() > 0 && cmd.getTotalRows() <= 0) {
-            cmd.setTotalRows(getTotalRows(cmd));
-        }
-
         String execSql = cmd.getJdbcSql();
         Object[] params = cmd.getJdbcParameters();
         if (cmd.getPageSize() > 0) {
+            if (cmd.getPageSize() > 0 && cmd.getTotalRows() <= 0) {
+                cmd.setTotalRows(getTotalRows(cmd));
+            }
             execSql = "select * from (" + execSql + ") as tlist limit ?,?";
 
             params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex(), cmd.getPageSize()});
