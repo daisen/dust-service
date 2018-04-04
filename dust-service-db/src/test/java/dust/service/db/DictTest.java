@@ -2,6 +2,8 @@ package dust.service.db;
 
 import com.alibaba.fastjson.JSONObject;
 import dust.service.TestApplication;
+import dust.service.db.dict.support.DataObjContainer4Mysql;
+import dust.service.db.dict.support.DataObjContainer4Oracle;
 import dust.service.db.sql.DataTable;
 import dust.service.core.util.SnowFlakeIdWorker;
 import dust.service.db.dict.condition.ColumnNode;
@@ -34,8 +36,34 @@ public class DictTest {
 
     @Test
     public void createDataObjFromMySql() {
-        DataObj obj = DataObjBuilder.create("*", "*", "1");
-        Assert.assertTrue(obj.getName() != null);
+        DictGlobalConfig.setContainerClass(DataObjContainer4Mysql.class.getName());
+        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("mysql"));
+        DataObj obj = DataObjBuilder.create("001", "basic", "dataobj");
+        Assert.assertTrue(obj.getName() != null && obj.getColumnSize() > 0);
+    }
+
+    @Test
+    public void createDataObjFromMySqlById() {
+        DictGlobalConfig.setContainerClass(DataObjContainer4Mysql.class.getName());
+        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("mysql"));
+        DataObj obj = DataObjBuilder.create(1L);
+        Assert.assertTrue(obj.getName() != null && obj.getColumnSize() > 0);
+    }
+
+    @Test
+    public void createDataObjFromOracle() {
+        DictGlobalConfig.setContainerClass(DataObjContainer4Oracle.class.getName());
+        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("oracle"));
+        DataObj obj = DataObjBuilder.create("001", "basic", "dataobj");
+        Assert.assertTrue(obj.getName() != null && obj.getColumnSize() > 0);
+    }
+
+    @Test
+    public void createDataObjFromOracleById() {
+        DictGlobalConfig.setContainerClass(DataObjContainer4Oracle.class.getName());
+        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("oracle"));
+        DataObj obj = DataObjBuilder.create(1L);
+        Assert.assertTrue(obj.getName() != null && obj.getColumnSize() > 0);
     }
 
 

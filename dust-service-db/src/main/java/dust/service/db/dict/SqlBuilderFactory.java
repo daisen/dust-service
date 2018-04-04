@@ -1,10 +1,9 @@
 package dust.service.db.dict;
 
-import dust.service.db.dict.builder.MySqlBuilder;
-import dust.service.db.dict.builder.OracleBuilder;
+import dust.service.db.dict.support.MySqlBuilder;
+import dust.service.db.dict.support.OracleBuilder;
 import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.support.DataBaseFactory;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author huangshengtao on 2018-1-10.

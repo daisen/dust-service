@@ -41,6 +41,15 @@ public class DataRow {
         return data.get(name);
     }
 
+    /**
+     * 检查列是否存在
+     * @param column
+     * @return
+     */
+    public boolean containsColumn(String column) {
+        return data.containsKey(column.toLowerCase());
+    }
+
 
     /**
      * 列值

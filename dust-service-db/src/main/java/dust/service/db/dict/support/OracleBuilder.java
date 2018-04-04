@@ -1,4 +1,4 @@
-package dust.service.db.dict.builder;
+package dust.service.db.dict.support;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

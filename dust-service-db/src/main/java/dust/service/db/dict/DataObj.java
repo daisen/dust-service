@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import dust.service.core.util.Converter;
 import dust.service.db.sql.DataTable;
 import dust.service.core.util.SnowFlakeIdWorker;
 import dust.service.db.dict.condition.BaseNode;
@@ -781,9 +782,12 @@ public class DataObj {
         this.orderBySql = jsonObject.getString("orderBySql");
         this.fixWhereSql = jsonObject.getString("fixWhereSql");
 
-        JSONObject jsonPage = jsonObject.getJSONObject("pageInfo");
-        this.pageInfo.setStart(jsonPage.getInteger("start"));
-        this.pageInfo.setPageSize(jsonPage.getInteger("pageSize"));
+        if (jsonObject.containsKey("pageInfo")) {
+            JSONObject jsonPage = jsonObject.getJSONObject("pageInfo");
+            this.pageInfo.setStart(null2Zero(jsonPage.getInteger("start")));
+            this.pageInfo.setPageSize(null2Zero(jsonPage.getInteger("pageSize")));
+        }
+
 
         //conditions
         JSONArray arrCdts = jsonObject.getJSONArray("conditions");
@@ -810,7 +814,10 @@ public class DataObj {
         if (jsonFixCondition != null) {
             this.fixCondition = Condition.create(jsonFixCondition);
         }
+    }
 
+    private Integer null2Zero(Integer n) {
+        return n == null ? 0 : n;
     }
 
     public JSONObject toSchemaJson() {

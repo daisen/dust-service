@@ -1,5 +1,7 @@
 package dust.service.db;
 
+import java.text.MessageFormat;
+
 /**
  * DustDB运行异常，通常帮助开发者开发阶段调试用，原则上开发环境不允许存在{@link RuntimeException}
  *
@@ -22,5 +24,16 @@ public class DustDbRuntimeException extends RuntimeException{
 
     public DustDbRuntimeException(Throwable cause){
         super(cause);
+    }
+
+    public static DustDbRuntimeException create(String message, Object... args) {
+        message = MessageFormat.format(message, args);
+        if (args != null && args.length > 0) {
+            Object firstObj = args[0];
+            if (firstObj instanceof Throwable) {
+                return new DustDbRuntimeException(message, (Throwable) firstObj);
+            }
+        }
+        return new DustDbRuntimeException(message);
     }
 }

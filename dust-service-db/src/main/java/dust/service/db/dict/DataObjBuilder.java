@@ -3,7 +3,7 @@ package dust.service.db.dict;
 import dust.service.core.util.BeanUtils;
 import dust.service.db.DbAdapterManager;
 import dust.service.db.DustDbRuntimeException;
-import dust.service.db.dict.builder.DataObjContainer4Mysql;
+import dust.service.db.dict.support.DataObjContainer4Mysql;
 import dust.service.db.sql.ISqlAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +67,14 @@ public class DataObjBuilder {
 
         instance.init();
         return instance.dataObjContainer.create(app, module, key);
+    }
+
+    public static DataObj create(Long id) {
+        if (instance == null) {
+            throw new NullPointerException("DataObjBuilder have not init");
+        }
+
+        instance.init();
+        return instance.dataObjContainer.create(id);
     }
 }
