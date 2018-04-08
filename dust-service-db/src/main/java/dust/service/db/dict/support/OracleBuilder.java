@@ -649,8 +649,9 @@ public class OracleBuilder extends SqlBuilder {
             }
 
             if (orderSql.length() > 0) {
-                selectCmd.appendSql("\r\nORDER BY ");
-                selectCmd.appendSql(orderSql);
+//                selectCmd.appendSql("\r\nORDER BY ");
+//                selectCmd.appendSql(orderSql);
+                selectCmd.appendOrderString(orderSql.toString());
             }
         }
 
