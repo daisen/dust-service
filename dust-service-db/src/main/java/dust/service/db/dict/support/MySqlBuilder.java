@@ -801,18 +801,23 @@ public class MySqlBuilder extends SqlBuilder {
      * @param dim
      */
     private void appendDimValueNodeSql(BaseNode node, SqlCommand cmd, int dim) {
+        StringBuilder sbValue = new StringBuilder();
         if (node.getType() == NodeType.VALUE) {
             if ((dim & 0x1) == 1) {
-                cmd.appendSql("%");
+                sbValue.append("%");
             }
+
+            sbValue.append(node.getValue());
 
             cmd.appendSql("${INDEX}");
             if ((dim & 0x2) == 2) {
-                cmd.appendSql("%");
+                sbValue.append("%");
             }
-            cmd.appendParameter(node.getTypeValue());
+            cmd.appendParameter(sbValue.toString());
         }
     }
+
+
     private void appendValueListNodeSql(BaseNode node, SqlCommand cmd) {
         cmd.appendSql("(");
         if (node.getType() == NodeType.VALUE_lIST) {
