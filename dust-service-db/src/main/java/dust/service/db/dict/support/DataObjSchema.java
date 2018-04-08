@@ -72,7 +72,7 @@ public class DataObjSchema {
         }
 
         if (StringUtils.isNotEmpty(objRow.get("orders"))) {
-            jsonOfObj.put("conditions", JSON.parseArray(objRow.get("orders")));
+            jsonOfObj.put("orders", JSON.parseArray(objRow.get("orders")));
         }
 
         if (columnData.size() == 0) {
