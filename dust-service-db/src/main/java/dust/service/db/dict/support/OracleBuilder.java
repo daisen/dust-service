@@ -833,7 +833,7 @@ public class OracleBuilder extends SqlBuilder {
     }
 
     /**
-     * 模糊匹配，dim=1 首匹配 dim=2 末尾匹配 dim=3 包含匹配
+     * 模糊匹配，dim=2 首匹配 dim=1 末尾匹配 dim=3 包含匹配
      *
      * @param node
      * @param cmd
@@ -841,12 +841,12 @@ public class OracleBuilder extends SqlBuilder {
      */
     private void appendDimValueNodeSql(BaseNode node, SqlCommand cmd, int dim) {
         if (node.getType() == NodeType.VALUE) {
-            if ((dim & 0x1) == 2) {
+            if ((dim & 0x1) == 1) {
                 cmd.appendSql("%");
             }
 
             cmd.appendSql("${INDEX}");
-            if ((dim & 0x2) == 1) {
+            if ((dim & 0x2) == 2) {
                 cmd.appendSql("%");
             }
             cmd.appendParameter(node.getTypeValue());
