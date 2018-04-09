@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -16,7 +15,6 @@ import java.util.List;
  * @author huangshengtao
  * @version 2017.3.9
  */
-@Component
 public class DbAdapterManager {
     private static Logger logger = LoggerFactory.getLogger(DbAdapterManager.class);
     //private static ThreadLocal<SqlAdapterContext> localSqlAdapterContext = new ThreadLocal<>();
@@ -73,9 +71,8 @@ public class DbAdapterManager {
             return adapter;
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
+            throw new DustDbRuntimeException(ex);
         }
-
-        return null;
     }
 
     /**

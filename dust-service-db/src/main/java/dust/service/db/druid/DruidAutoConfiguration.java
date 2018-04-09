@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnProperty(value = "dust.db.poolName", havingValue = "druid")
 @EnableConfigurationProperties({DruidProperties.class})
-public class DruidConfig {
+public class DruidAutoConfiguration {
     @Autowired
     DustDbProperties dustDbProperties;
 

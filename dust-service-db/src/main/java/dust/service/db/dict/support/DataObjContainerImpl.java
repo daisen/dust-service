@@ -45,7 +45,7 @@ public class DataObjContainerImpl implements IDataObjContainer {
                 adapter = DataObjBuilder.getSqlAdapter();
                 LocalHolder.get(LOCAL_SQL_ADAPTER).set(adapter);
                 if (!isSupport(localSqlAdapter.get().getDbType())) {
-                    throw new DustDbRuntimeException("dict Container dbType not compatible for" + adapter.getDbType());
+                    throw new DustDbRuntimeException("dict Container dbType not compatible for " + adapter.getDbType());
                 }
             }
         } catch (SQLException e) {

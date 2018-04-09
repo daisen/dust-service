@@ -6,8 +6,6 @@ import dust.service.db.support.DataBaseFactory;
 import oracle.jdbc.OracleTypes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.sql.RowSet;
 import java.sql.PreparedStatement;
@@ -21,8 +19,6 @@ import java.util.Map;
  * 支持Oracle的DataBase实现
  * @author huangshengtao
  */
-@Component
-@Scope("prototype")
 public class OracleDataBase extends DataBaseImpl {
 
     @Override

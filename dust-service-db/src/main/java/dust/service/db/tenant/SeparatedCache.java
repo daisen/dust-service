@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import dust.service.db.tenant.pojo.AppConfig;
 import dust.service.db.tenant.pojo.DbAccess;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import java.util.Map;
  *
  * @author huangshengtao
  */
-@Component
 public class SeparatedCache {
     private Map<String, DbAccess> dbs = Maps.newHashMap();
     private Map<String, AppConfig> apps = Maps.newHashMap();

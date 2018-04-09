@@ -1,7 +1,7 @@
 package dust.service.micro.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+
 import org.springframework.web.cors.CorsConfiguration;
 
 /**
@@ -10,7 +10,6 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author huangshengtao
  */
 @ConfigurationProperties(prefix = "dust.ms", ignoreUnknownFields = false)
-@Component
 public class DustMsProperties {
 
     private final Async async = new Async();

@@ -11,13 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 /**
  * 用于访问数据库的库
  * @author huangshengtao
  */
-@Component
 public class TenantRepository {
     @Autowired
     TenantAdapterManager tenantAdapterManager;

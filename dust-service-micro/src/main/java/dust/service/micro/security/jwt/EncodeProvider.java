@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
 
 /**
  * 转码工具类，用于避免一些敏感信息的明文传输
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  *
  * @author huangshengtao
  */
-@Component
 public class EncodeProvider {
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     public static final String ENCODE_TYPE = "CUSTOM_BASE64";

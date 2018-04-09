@@ -1,23 +1,22 @@
 package dust.service.db.tenant;
 
+import dust.service.core.util.ClassBuildUtils;
+import dust.service.db.DbAdapterManager;
+import dust.service.db.DustDbProperties;
 import dust.service.db.DustDbRuntimeException;
 import dust.service.db.pool.DataSourceTemplate;
 import dust.service.db.sql.DataRow;
 import dust.service.db.sql.DataTable;
+import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.sql.SqlCommand;
 import dust.service.db.tenant.pojo.AppConfig;
-import dust.service.core.util.ClassBuildUtils;
-import dust.service.db.DbAdapterManager;
-import dust.service.db.DustDbProperties;
-import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.tenant.pojo.DbAccess;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.sql.SQLException;
 
 /**
@@ -25,8 +24,7 @@ import java.sql.SQLException;
  *
  * @author huangshengtao
  */
-@Component
-public class SeparatedConfig {
+public class SeparatedConfig implements InitializingBean {
 
     static Logger logger = LoggerFactory.getLogger(SeparatedConfig.class);
 
@@ -50,7 +48,6 @@ public class SeparatedConfig {
      *
      * @throws TenantException
      */
-    @PostConstruct
     public void init() {
         if (!dustDbProperties.getTenant().isEnable()) return;
         synchronized (inited) {
@@ -257,4 +254,8 @@ public class SeparatedConfig {
         separatedCache.setApp(appConfig);
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        init();
+    }
 }

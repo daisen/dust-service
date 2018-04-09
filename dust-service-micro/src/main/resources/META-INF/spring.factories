@@ -1,0 +1,9 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  dust.service.micro.config.AspectConfiguration,\
+  dust.service.micro.config.AsyncConfiguration,\
+  dust.service.micro.config.CacheConfiguration,\
+  dust.service.micro.config.ComponentConfiguration,\
+  dust.service.micro.config.SecurityConfiguration,\
+  dust.service.micro.config.WebConfiguration,\
+  dust.service.micro.stream.ReceiveBean,\
+  dust.service.micro.stream.SendBean

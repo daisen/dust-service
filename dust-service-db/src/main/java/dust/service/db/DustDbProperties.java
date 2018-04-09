@@ -3,7 +3,6 @@ package dust.service.db;
 import com.google.common.collect.Lists;
 import dust.service.db.pool.DataSourceContext;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -13,7 +12,6 @@ import java.util.List;
  * @author huangshengtao
  */
 @ConfigurationProperties("dust.db")
-@Component
 public class DustDbProperties {
     private String dateTimeFormatter;
     private String urlParameters = "useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8";

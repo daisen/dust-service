@@ -1,6 +1,7 @@
 package dust.service.db.dict.support;
 
 import dust.service.db.sql.SqlCommand;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 
@@ -35,5 +36,10 @@ public class DataObjContainer4Oracle extends DataObjContainerImpl {
                 "WHERE id = :id");
         masterCmd.setParameter("id", id);
         return masterCmd;
+    }
+
+    @Override
+    public boolean isSupport(String dbType) {
+        return StringUtils.equals(dbType, "oracle");
     }
 }

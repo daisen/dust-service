@@ -6,14 +6,12 @@ import dust.service.db.tenant.DbManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * 租户数据适配管理器
  *
  * @author huangshengtao
  */
-@Component
 public class TenantAdapterManager {
 
     static Logger logger = LoggerFactory.getLogger(TenantAdapterManager.class);

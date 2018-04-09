@@ -1,8 +1,5 @@
 package dust.service.db.sql;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -10,8 +7,6 @@ import java.sql.SQLException;
  * 写操作数据适配器
  * @author huangshengtao
  */
-@Component("writeSqlAdapterImpl")
-@Scope("prototype")
 public class WriteSqlAdapterImpl extends SqlAdapterImpl {
     @Override
     public Connection getConnection() throws SQLException {

@@ -1,12 +1,10 @@
 package dust.service.db.support.mysql;
 
-import dust.service.db.support.DataBaseFactory;
 import dust.service.db.sql.CommandTypeEnum;
 import dust.service.db.sql.DataBaseImpl;
 import dust.service.db.sql.SqlCommand;
+import dust.service.db.support.DataBaseFactory;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.sql.RowSet;
 import java.sql.PreparedStatement;
@@ -16,8 +14,6 @@ import java.sql.SQLException;
  * 支持MySql的DataBase实现
  * @author huangshengtao
  */
-@Component
-@Scope("prototype")
 public class MySqlDataBase extends DataBaseImpl {
 
     @Override

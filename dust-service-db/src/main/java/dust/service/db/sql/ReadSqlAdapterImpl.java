@@ -1,8 +1,5 @@
 package dust.service.db.sql;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -11,8 +8,6 @@ import java.sql.SQLException;
  * 重载连接操作，关闭事务
  * @author huangshengtao
  */
-@Component("readSqlAdapterImpl")
-@Scope("prototype")
 public class ReadSqlAdapterImpl extends SqlAdapterImpl {
     @Override
     public Connection getConnection() throws SQLException {

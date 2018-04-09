@@ -1,10 +1,12 @@
 package dust.service.db;
 
+import dust.service.db.dict.DataObjBuilder;
 import dust.service.db.dict.DictGlobalConfig;
 import dust.service.db.pool.DataSourceCache;
 import dust.service.db.pool.DynamicDataSource;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +20,8 @@ import javax.sql.DataSource;
  */
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Configuration
-public class DustDbConfig implements InitializingBean {
+@EnableConfigurationProperties({DustDbProperties.class})
+public class DustDbAutoConfiguration implements InitializingBean {
 
     @Autowired
     DustDbProperties dustDbProperties;
@@ -36,5 +39,20 @@ public class DustDbConfig implements InitializingBean {
         DictGlobalConfig.setDataSourceName(dustDbProperties.getDict().getDataSourceName());
         DictGlobalConfig.setAllowColumnNameOutOfUnderscore(dustDbProperties.getDict().isAllowColumnNameOutOfUnderscore());
         DictGlobalConfig.setContainerClass(dustDbProperties.getDict().getContainerClass());
+    }
+
+    @Bean
+    public TenantAdapterManager tenantAdapterManager() {
+        return new TenantAdapterManager();
+    }
+
+    @Bean
+    public DbAdapterManager dbAdapterManager() {
+        return new DbAdapterManager();
+    }
+
+    @Bean
+    public DataObjBuilder dataObjBuilder() {
+        return new DataObjBuilder();
     }
 }

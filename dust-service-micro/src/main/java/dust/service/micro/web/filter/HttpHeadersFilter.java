@@ -17,15 +17,6 @@ public class HttpHeadersFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (BeanUtils.context != null) {
-            Object filter = BeanUtils.getBean("dustCustomFilter");
-            if (filter != null && filter instanceof GenericFilterBean) {
-                ((GenericFilterBean) filter).doFilter(servletRequest, servletResponse, filterChain);
-                return;
-            }
-
-        }
-
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

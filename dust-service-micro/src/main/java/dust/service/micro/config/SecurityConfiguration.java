@@ -1,10 +1,13 @@
 package dust.service.micro.config;
 
 import dust.service.micro.security.AuthoritiesConstants;
+import dust.service.micro.security.jwt.EncodeProvider;
 import dust.service.micro.security.jwt.JWTConfigurer;
 import dust.service.micro.security.jwt.SignProvider;
 import dust.service.micro.security.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -18,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableConfigurationProperties(DustMsProperties.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -28,6 +32,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private DustMsProperties dustMsProperties;
+
+    @Bean
+    public TokenProvider tokenProvider() {
+        return new TokenProvider();
+    }
+
+    @Bean
+    public SignProvider signProvider() {
+        return new SignProvider();
+    }
+
+    @Bean
+    public EncodeProvider encodeProvider() {
+        return new EncodeProvider();
+    }
 
     /**
      * 配置请求忽略列表
