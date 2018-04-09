@@ -669,7 +669,7 @@ public class OracleBuilder extends SqlBuilder {
         for (int i = 0; i < conditions.size(); i++) {
             Condition item = conditions.get(i);
             SqlCommand cmd = getConditionSql(item);
-            subWhereCmd.append(cmd);
+            subWhereCmd.append(cmd, !item.isRequire());
         }
 
         return subWhereCmd;
@@ -788,7 +788,7 @@ public class OracleBuilder extends SqlBuilder {
         for (int i = 0; i < subConditions.size(); i++) {
             Condition condition = subConditions.get(i);
             SqlCommand subCmd = getConditionSql(condition);
-            cmd.append(subCmd);
+            cmd.append(subCmd, !condition.isRequire());
         }
 
         return cmd;
