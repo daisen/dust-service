@@ -18,7 +18,7 @@ CREATE TABLE `dataobj` (
   `conditions` varchar(500) DEFAULT NULL,
   `fix_condition` varchar(100) DEFAULT NULL,
   `orders` varchar(100) DEFAULT NULL,
-  `start` int NOT NULL DEFAULT 0,
+  `start_index` int NOT NULL DEFAULT 0,
   `page_size` int NOT NULL DEFAULT 0,
   `fix_where_sql` varchar(500) DEFAULT NULL,
   `order_by_sql` varchar(500) DEFAULT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE `dataobj_app` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `app` char(20) NOT NULL,
-  `description` text DEFAULT NULL,
+  `description` char(200) DEFAULT NULL,
   PRIMARY KEY (`id`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
 
@@ -100,7 +100,7 @@ CREATE TABLE `dataobj_module` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `master_id` bigint(20) unsigned NOT NULL,
   `module` char(20) NOT NULL,
-  `description` text DEFAULT NULL,
+  `description` char(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_app_module` (`master_id`,`module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
