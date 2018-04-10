@@ -1,6 +1,8 @@
 package dust.service.db;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import dust.service.TestApplication;
 import dust.service.db.dict.support.DataObjContainer4Mysql;
 import dust.service.db.dict.support.DataObjContainer4Oracle;
@@ -53,7 +55,8 @@ public class DictTest {
     @Test
     public void createDataObjFromOracle() {
         DictGlobalConfig.setContainerClass(DataObjContainer4Oracle.class.getName());
-        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("oracle"));
+//        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("oracle"));
+        DictGlobalConfig.setDataSourceName("oracle");
         DataObj obj = DataObjBuilder.create("001", "basic", "dataobj");
         Assert.assertTrue(obj.getName() != null && obj.getColumnSize() > 0);
     }
@@ -61,7 +64,7 @@ public class DictTest {
     @Test
     public void createDataObjFromOracleById() {
         DictGlobalConfig.setContainerClass(DataObjContainer4Oracle.class.getName());
-        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("oracle"));
+        DictGlobalConfig.setDataSourceName("oracle");
         DataObj obj = DataObjBuilder.create(1L);
         Assert.assertTrue(obj.getName() != null && obj.getColumnSize() > 0);
     }
@@ -77,7 +80,7 @@ public class DictTest {
         obj.setFixCondition(new Condition());
         obj.getFixCondition().setLeft(new ColumnNode("dataobj", "app"));
         obj.getFixCondition().setOperation(OperationType.EQUAL);
-        obj.getFixCondition().setRight(new ValueNode("*"));
+        obj.getFixCondition().setRight(new ValueNode("001"));
 
         DataObjColumn col = new DataObjColumn(DataType.UBIGINT);
         col.setAutoIncrement(true);
@@ -124,8 +127,8 @@ public class DictTest {
     public void getSchemaJson() {
         DataObj obj = createDataObjFromManual();
         JSONObject json = obj.toSchemaJson();
-        Assert.assertEquals("", "{\"tables\":[],\"whereSql\":\"1=1\",\"columns\":[{\"dataType\":\"UBIGINT\",\"tableName\":\"dataobj\",\"name\":\"id字段\",\"objId\":0,\"ignore\":false,\"id\":0,\"conditions\":[],\"columnName\":\"id\",\"primaryKey\":true},{\"defaultValue\":\"@NOW\",\"dataType\":\"DATE\",\"tableName\":\"dataobj\",\"name\":\"创建时间\",\"objId\":0,\"ignore\":false,\"id\":0,\"conditions\":[],\"columnName\":\"gmt_create\",\"primaryKey\":false},{\"defaultValue\":\"@UPDATE\",\"dataType\":\"DATE\",\"tableName\":\"dataobj\",\"name\":\"更新时间\",\"objId\":0,\"ignore\":false,\"id\":0,\"conditions\":[],\"columnName\":\"gmt_modified\",\"primaryKey\":false},{\"dataType\":\"STRING\",\"tableName\":\"dataobj\",\"name\":\"名称\",\"objId\":0,\"ignore\":false,\"id\":0,\"conditions\":[],\"columnName\":\"name\",\"primaryKey\":false}],\"name\":\"dataobj\",\"pageInfo\":{\"pageSize\":50,\"start\":0},\"orders\":[],\"fixCondition\":{\"left\":{\"type\":\"COLUMN\",\"tableName\":\"dataobj\",\"columnName\":\"app\"},\"require\":true,\"right\":{\"type\":\"VALUE\",\"value\":\"0\"},\"operation\":\"EQUAL\"},\"conditions\":[],\"tableName\":\"dataobj\"}"
-                , json.toJSONString());
+        Assert.assertEquals("", "{\"tables\":[],\"whereSql\":\"1=1\",\"columns\":[{\"defaultValue\":null,\"dataType\":\"UBIGINT\",\"required\":true,\"tableName\":\"dataobj\",\"columnLabel\":\"id\",\"relationTableName\":null,\"idColumnLabel\":null,\"name\":\"id字段\",\"objId\":0,\"width\":0,\"ignore\":false,\"decimalDigits\":0,\"id\":0,\"conditions\":[],\"relationColumnName\":null,\"columnName\":\"id\",\"primaryKey\":true,\"mirrorColumnLabel\":null},{\"defaultValue\":\"@NOW\",\"dataType\":\"DATE\",\"required\":true,\"tableName\":\"dataobj\",\"columnLabel\":\"gmtCreate\",\"relationTableName\":null,\"idColumnLabel\":null,\"name\":\"创建时间\",\"objId\":0,\"width\":0,\"ignore\":false,\"decimalDigits\":0,\"id\":0,\"conditions\":[],\"relationColumnName\":null,\"columnName\":\"gmt_create\",\"primaryKey\":false,\"mirrorColumnLabel\":null},{\"defaultValue\":\"@UPDATE\",\"dataType\":\"DATE\",\"required\":true,\"tableName\":\"dataobj\",\"columnLabel\":\"gmtModified\",\"relationTableName\":null,\"idColumnLabel\":null,\"name\":\"更新时间\",\"objId\":0,\"width\":0,\"ignore\":false,\"decimalDigits\":0,\"id\":0,\"conditions\":[],\"relationColumnName\":null,\"columnName\":\"gmt_modified\",\"primaryKey\":false,\"mirrorColumnLabel\":null},{\"defaultValue\":null,\"dataType\":\"STRING\",\"required\":false,\"tableName\":\"dataobj\",\"columnLabel\":\"name\",\"relationTableName\":null,\"idColumnLabel\":null,\"name\":\"名称\",\"objId\":0,\"width\":0,\"ignore\":false,\"decimalDigits\":0,\"id\":0,\"conditions\":[],\"relationColumnName\":null,\"columnName\":\"name\",\"primaryKey\":false,\"mirrorColumnLabel\":null}],\"orderBySql\":null,\"name\":\"dataobj\",\"pageInfo\":{\"pageSize\":50,\"start\":0,\"totalRows\":0},\"alias\":null,\"orders\":[],\"fixCondition\":{\"left\":{\"type\":\"COLUMN\",\"tableName\":\"dataobj\",\"columnName\":\"app\"},\"require\":true,\"right\":{\"type\":\"VALUE\",\"value\":\"*\"},\"operation\":\"EQUAL\"},\"fixWhereSql\":null,\"conditions\":[],\"tableName\":\"dataobj\"}"
+                , JSON.toJSONString(json, SerializerFeature.WriteMapNullValue));
 
     }
 
@@ -157,43 +160,12 @@ public class DictTest {
         Assert.assertTrue(obj.getRows().size() == 1);
     }
 
-    @Test
-    public void bigSearchDataDirect() throws SQLException {
-        ISqlAdapter adapter = dbAdapterManager.getAdapter("test");
-        for (int i = 0; i < 10; i++) {
-            long start = System.currentTimeMillis();
-            DataTable dt = adapter.query("Select `id`, `gmt_create`, `gmt_modified`, `alias`, `app`, `module`, `name`, `table_name`, `conditions`, `fix_condition`, `orders`, `start`, `page_size`, `fix_where_sql`, `order_by_sql`, `where_sql` from dataobj limit 0,"
-                    + (i + 1) * 1000, null);
-            long end = System.currentTimeMillis();
-            System.out.println(((i + 1) * 1000) + "," + (end - start));
-        }
-    }
-
-    @Test
-    public void bigSearchData() throws SQLException, IOException {
-
-        DataObj obj = DataObjBuilder.create("test", "*", "dataobj");
-        DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("test"));
-        for (int i = 0; i < 10; i++) {
-            long start = new Date().getTime();
-            obj.getPageInfo().setStart(0);
-            obj.getPageInfo().setPageSize((i + 1) * 1000);
-            obj.search();
-            long end = new Date().getTime();
-            System.out.println(((i + 1) * 1000) + "," + (end - start));
-        }
-
-
-        Assert.assertTrue(obj.getRows().size() > 0);
-        System.out.println(obj.getRows().size());
-    }
-
 
     @Test
     public void importData() throws SQLException {
-        DataObj obj = DataObjBuilder.create("test", "*", "dataobj");
+        DataObj obj = DataObjBuilder.create("001", "basic", "dataobj");
         DictGlobalConfig.setSqlAdapter(dbAdapterManager.getAdapter("test"));
-        int batch = 10000;
+        int batch = 10;
         int per = 100;
 
         long start = System.currentTimeMillis();
@@ -207,6 +179,8 @@ public class DictTest {
                 r.setValue("alias", "table" + SnowFlakeIdWorker.getInstance0().nextId());
                 r.setValue("name", "测试数据");
                 r.setValue("tableName", "table");
+                r.setValue("startIndex", 0);
+                r.setValue("pageSize", 0);
                 System.out.println(i + "-" + j);
             }
             obj.save();
