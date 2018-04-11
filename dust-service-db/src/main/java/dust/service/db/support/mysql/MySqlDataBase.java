@@ -5,6 +5,8 @@ import dust.service.db.sql.DataBaseImpl;
 import dust.service.db.sql.SqlCommand;
 import dust.service.db.support.DataBaseFactory;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.RowSet;
 import java.sql.PreparedStatement;
@@ -15,6 +17,7 @@ import java.sql.SQLException;
  * @author huangshengtao
  */
 public class MySqlDataBase extends DataBaseImpl {
+    static Logger logger = LoggerFactory.getLogger(MySqlDataBase.class);
 
     @Override
     public RowSet queryRowSet(SqlCommand cmd) throws SQLException {
@@ -23,21 +26,26 @@ public class MySqlDataBase extends DataBaseImpl {
         }
 
         String execSql = cmd.getJdbcSql();
-        Object[] params = cmd.getJdbcParameters();
-        if (cmd.getPageSize() > 0) {
-            if (cmd.getPageSize() > 0 && cmd.getTotalRows() <= 0) {
-                cmd.setTotalRows(getTotalRows(cmd));
-            }
-            execSql = "select * from (" + execSql + ") as tlist limit ?,?";
+        try {
+            Object[] params = cmd.getJdbcParameters();
+            if (cmd.getPageSize() > 0) {
+                if (cmd.getPageSize() > 0 && cmd.getTotalRows() <= 0) {
+                    cmd.setTotalRows(getTotalRows(cmd));
+                }
+                execSql = "select * from (" + execSql + ") as tlist limit ?,?";
 
-            params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex(), cmd.getPageSize()});
+                params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex(), cmd.getPageSize()});
+            }
+            PreparedStatement statement = getConnection().prepareStatement(execSql);
+            RowSet rs = executeQuery(statement, params);
+            if (cmd.getTotalRows() <= 0) {
+                cmd.setTotalRows(rs.getFetchSize());
+            }
+            return rs;
+        } catch (SQLException se) {
+            logger.error(execSql);
+            throw se;
         }
-        PreparedStatement statement = getConnection().prepareStatement(execSql);
-        RowSet rs = executeQuery(statement, params);
-        if (cmd.getTotalRows() <= 0) {
-            cmd.setTotalRows(rs.getFetchSize());
-        }
-        return rs;
     }
 
     @Override

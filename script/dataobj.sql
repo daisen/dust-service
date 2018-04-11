@@ -24,7 +24,7 @@ CREATE TABLE `dataobj` (
   `order_by_sql` varchar(500) DEFAULT NULL,
   `where_sql` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`alias`),
+  UNIQUE KEY `idx_alias_app` (`app`,`alias`),
   KEY `idx_table_name` (`table_name`),
   KEY `idx_app` (`app`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
