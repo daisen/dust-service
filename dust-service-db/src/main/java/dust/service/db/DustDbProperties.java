@@ -17,7 +17,7 @@ public class DustDbProperties {
     private String urlParameters = "useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8";
     private List<DataSourceContext> dbList = Lists.newArrayList();
     private boolean initWhenCreate;
-    private String poolName;
+    private String poolName = "druid";
     private boolean autoAdapterDestroy;
     private Tenant tenant = new Tenant();
     private Dict dict = new Dict();
