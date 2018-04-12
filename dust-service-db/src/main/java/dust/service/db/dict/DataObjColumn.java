@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
+import com.sun.tools.javac.util.Convert;
 import dust.service.core.util.CamelNameUtils;
 import dust.service.core.util.Converter;
 import dust.service.core.util.SnowFlakeIdWorker;
@@ -299,8 +300,9 @@ public class DataObjColumn {
             case CURRENCY:
                 return Converter.toBigDecimal(value);
             case INT:
-            case UBIGINT:
                 return Converter.toInteger(value);
+            case UBIGINT:
+                return Converter.toLong(value);
             case STRING:
             case TEXT:
                 return Converter.toString(value);
