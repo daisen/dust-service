@@ -86,6 +86,7 @@ public class DbAdapterManager {
 
         List<ISqlAdapter> adapterList = ctx.getAdapterList();
         for(ISqlAdapter adapter : adapterList) {
+            adapter.rollbackQuiet();
             adapter.closeQuiet();
         }
 
