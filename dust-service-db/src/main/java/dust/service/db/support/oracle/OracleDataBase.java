@@ -6,6 +6,8 @@ import dust.service.db.support.DataBaseFactory;
 import oracle.jdbc.OracleTypes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.RowSet;
 import java.sql.PreparedStatement;
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 public class OracleDataBase extends DataBaseImpl {
 
+    static Logger logger = LoggerFactory.getLogger(OracleDataBase.class);
+
     @Override
     public RowSet queryRowSet(SqlCommand cmd) throws SQLException {
         if (cmd.getCommandType() == CommandTypeEnum.StoredProcedure) {
@@ -28,23 +32,28 @@ public class OracleDataBase extends DataBaseImpl {
         }
 
         String execSql = cmd.getJdbcSql();
-        Object[] params = cmd.getJdbcParameters();
-        if (cmd.getPageSize() > 0) {
-            if (cmd.getTotalRows() <= 0) {
-                cmd.setTotalRows(getTotalRows(cmd));
+        try {
+            Object[] params = cmd.getJdbcParameters();
+            if (cmd.getPageSize() > 0) {
+                if (cmd.getTotalRows() <= 0) {
+                    cmd.setTotalRows(getTotalRows(cmd));
+                }
+
+                execSql = "select * from(select row_.*,rownum rownum_ from(" + execSql
+                        + ")row_ )  where rownum_ >= ? and  rownum_ <= ?";
+
+                params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex() + 1, cmd.getEndIndex() + 1});
             }
-
-            execSql = "select * from(select row_.*,rownum rownum_ from(" + execSql
-                    + ")row_ )  where rownum_ >= ? and  rownum_ <= ?";
-
-            params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex() + 1, cmd.getEndIndex() + 1});
+            PreparedStatement statement = getConnection().prepareStatement(execSql);
+            RowSet rs = executeQuery(statement, params);
+            if (cmd.getTotalRows() <= 0) {
+                cmd.setTotalRows(rs.getFetchSize());
+            }
+            return rs;
+        } catch (SQLException se) {
+            logger.error(execSql);
+            throw se;
         }
-        PreparedStatement statement = getConnection().prepareStatement(execSql);
-        RowSet rs = executeQuery(statement, params);
-        if (cmd.getTotalRows() <= 0) {
-            cmd.setTotalRows(rs.getFetchSize());
-        }
-        return rs;
     }
 
 
