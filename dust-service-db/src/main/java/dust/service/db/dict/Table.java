@@ -3,6 +3,7 @@ package dust.service.db.dict;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Table {
     private long id;
     private String tableName;
+    private String alias;
     private RelationType relationType = RelationType.LEFT;
     private String columnName;
     private String relationColumn;
@@ -23,6 +25,12 @@ public class Table {
     private Boolean followUpdate = true;
     private final List<Condition> conditions = Lists.newArrayList();
 
+    public Table() {
+    }
+
+    public Table(String tableName) {
+        this.tableName = tableName;
+    }
 
     public String getTableName() {
         return tableName;
@@ -30,6 +38,17 @@ public class Table {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getAlias() {
+        if (StringUtils.isEmpty(alias)) {
+            return tableName;
+        }
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public long getId() {
@@ -118,6 +137,7 @@ public class Table {
     public static Table create(JSONObject schema) {
         Table tb = new Table();
         tb.tableName = schema.getString("tableName");
+        tb.alias = schema.getString("alias");
         tb.columnName = schema.getString("columnName");
         tb.relationColumn = schema.getString("relationColumn");
         tb.relationWhere = schema.getString("relationWhere");
@@ -140,6 +160,7 @@ public class Table {
     public JSONObject toJson() {
         JSONObject jsonTable = new JSONObject();
         jsonTable.put("tableName", this.tableName);
+        jsonTable.put("alias", this.alias);
         jsonTable.put("columnName", this.columnName);
         jsonTable.put("relationColumn", this.relationColumn);
         jsonTable.put("relationType", this.relationType);

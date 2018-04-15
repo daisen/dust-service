@@ -6,6 +6,7 @@ import dust.service.db.dict.condition.NodeType;
 import dust.service.db.sql.DataTable;
 import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.sql.SqlCommand;
+import javafx.scene.control.Tab;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
@@ -51,12 +52,14 @@ public abstract class SqlBuilder {
     }
 
     public String getInsertSql(DataObj destObj, String tbName) throws SQLException {
-        SqlCommand insertCmd = getInsertSqlCore(destObj, tbName);
+        Table tb = destObj.getTable(tbName);
+        SqlCommand insertCmd = getInsertSqlCore(destObj, tb);
         return insertCmd.getJdbcExecuteSql(this::getDbValue);
     }
 
     public String getUpdateSql(DataObj destObj, String tbName) throws SQLException {
-        SqlCommand updateCmd = getUpdateSqlCore(destObj, tbName);
+        Table tb = destObj.getTable(tbName);
+        SqlCommand updateCmd = getUpdateSqlCore(destObj, tb);
         return updateCmd.getJdbcExecuteSql(this::getDbValue);
     }
 
@@ -126,58 +129,7 @@ public abstract class SqlBuilder {
         selectCmd.appendSql(obj.getTableName());
 
         List<Table> tables = obj.getTables();
-        if (tables.size() > 0) {
-            for (Table tb : tables) {
-                switch (tb.getRelationType()) {
-                    case LEFT:
-                        selectCmd.appendSql("\r\nLEFT JOIN ");
-                        break;
-                    case RIGHT:
-                        selectCmd.appendSql("\r\nRIGHT JOIN ");
-                        break;
-                    case INNER:
-                        selectCmd.appendSql("\r\nINNER JOIN ");
-                        break;
-                }
-
-                selectCmd.appendSql(tb.getTableName());
-                selectCmd.appendSql(" ");
-                selectCmd.appendSql(tb.getTableName());
-
-                SqlCommand onCmd = new SqlCommand();
-
-                //condtion条件
-                List<Condition> conditions = tb.getAllCondition();
-                if (conditions.size() > 0) {
-                    onCmd.append(getConditionsSql(conditions));
-                }
-
-                //关联字段条件
-                if (!StringUtils.isEmpty(tb.getColumnName()) && !StringUtils.isEmpty(tb.getRelationColumn())) {
-                    StringBuilder onWhere = new StringBuilder();
-                    onWhere.append(tb.getTableName());
-                    onWhere.append(".");
-                    onWhere.append(tb.getColumnName());
-                    onWhere.append("=");
-                    onWhere.append(obj.getTableName());
-                    onWhere.append(".");
-                    onWhere.append(tb.getRelationColumn());
-                    onCmd.appendWhere(onWhere.toString());
-                }
-
-                //自写关联条件
-                if (!StringUtils.isEmpty(tb.getRelationWhere())) {
-                    //注入风险
-                    onCmd.appendWhere(tb.getRelationWhere());
-                }
-
-                if (onCmd.hasWhere()) {
-                    selectCmd.appendSql(" ON ");
-                    selectCmd.appendSql(onCmd.getWhere());
-                    selectCmd.appendParameters(onCmd.getParameters());
-                }
-            }
-        }
+        joinTable(obj, selectCmd, tables);
 
         SqlCommand whereCmd = new SqlCommand();
         List<Condition> conditions = obj.getAllCondition();
@@ -236,10 +188,10 @@ public abstract class SqlBuilder {
         return selectCmd;
     }
 
-    protected SqlCommand getInsertSqlCore(DataObj destObj, String tbName) throws SQLException {
+    protected SqlCommand getInsertSqlCore(DataObj destObj, Table tb) throws SQLException {
         SqlCommand cmd = new SqlCommand();
         cmd.appendSql("INSERT INTO ");
-        cmd.appendSql(tbName);
+        cmd.appendSql(tb.getTableName());
         cmd.appendSql("(");
 
         StringBuilder sbCols = new StringBuilder();
@@ -251,7 +203,7 @@ public abstract class SqlBuilder {
                 continue;
             }
 
-            if (StringUtils.equals(col.getTableName(), tbName)) {
+            if (StringUtils.equals(col.getTableName(), tb.getAlias())) {
 
                 if (!handleInsertSqlCoreColumn(col, sbCols, sbValues, colIndexes)) {
                     if (sbCols.length() > 0) {
@@ -271,7 +223,7 @@ public abstract class SqlBuilder {
         }
 
         if (sbCols.length() == 0) {
-            throw new SQLException("not found insert column in table(" + tbName + ")");
+            throw new SQLException("not found insert column in table(" + tb.getTableName() + ")");
         }
 
         cmd.appendSql(sbCols);
@@ -285,10 +237,10 @@ public abstract class SqlBuilder {
     }
 
 
-    protected SqlCommand getUpdateSqlCore(DataObj destObj, String tbName) throws SQLException {
+    protected SqlCommand getUpdateSqlCore(DataObj destObj, Table tb) throws SQLException {
         SqlCommand cmd = new SqlCommand();
         cmd.appendSql("UPDATE ");
-        cmd.appendSql(tbName);
+        cmd.appendSql(tb.getTableName());
         cmd.appendSql(" SET ");
 
         StringBuilder sbSet = new StringBuilder();
@@ -302,7 +254,7 @@ public abstract class SqlBuilder {
                 continue;
             }
 
-            if (StringUtils.equals(col.getTableName(), tbName)) {
+            if (StringUtils.equals(col.getTableName(), tb.getAlias())) {
                 if (!handleUpdateSqlCoreColumn(col, sbSet, setIndexes)) {
                     if (!col.isAutoIncrement()) {
                         if (sbSet.length() > 0) {
@@ -330,13 +282,13 @@ public abstract class SqlBuilder {
 
         //set
         if (sbSet.length() == 0) {
-            throw new SQLException("not found modified column in table(" + tbName + ")");
+            throw new SQLException("not found modified column in table(" + tb.getTableName() + ")");
         }
         cmd.appendSql(sbSet);
 
         //where
         if (pkWhere.length() == 0) {
-            throw new SQLException("not found primary key column in table(" + tbName + ")");
+            throw new SQLException("not found primary key column in table(" + tb.getTableName() + ")");
         }
         cmd.appendSql(" WHERE ");
         cmd.appendSql(pkWhere);
@@ -347,16 +299,16 @@ public abstract class SqlBuilder {
     }
 
 
-    protected SqlCommand getDeleteSqlCore(DataObj destObj, String tbName) throws SQLException {
+    protected SqlCommand getDeleteSqlCore(DataObj destObj, Table tb) throws SQLException {
         SqlCommand cmd = new SqlCommand();
         cmd.appendSql("DELETE FROM ");
-        cmd.appendSql(tbName);
+        cmd.appendSql(tb.getTableName());
 
         StringBuilder primaryWhere = new StringBuilder();
         List<Integer> primaryIndexes = Lists.newArrayList();
         for (int i = 0; i < destObj.getColumnSize(); i++) {
             DataObjColumn col = destObj.getColumn(i);
-            if (!col.isIgnore() && col.isPrimaryKey() && StringUtils.equals(col.getTableName(), tbName)) {
+            if (!col.isIgnore() && col.isPrimaryKey() && StringUtils.equals(col.getTableName(), tb.getAlias())) {
                 if (primaryWhere.length() > 0) {
                     primaryWhere.append(" AND ");
                 }
@@ -370,7 +322,7 @@ public abstract class SqlBuilder {
         }
 
         if (primaryWhere.length() == 0) {
-            throw new SQLException("not found primary key in delete table(" + tbName + ")");
+            throw new SQLException("not found primary key in delete table(" + tb.getTableName() + ")");
         }
 
         cmd.appendSql(" WHERE ");
@@ -406,8 +358,8 @@ public abstract class SqlBuilder {
     }
 
 
-    public StringBuilder batchInsertSql(DataObj destObj, String tbName) throws SQLException {
-        SqlCommand insertCmd = getInsertSqlCore(destObj, tbName);
+    public StringBuilder batchInsertSql(DataObj destObj, Table tb) throws SQLException {
+        SqlCommand insertCmd = getInsertSqlCore(destObj, tb);
         StringBuilder batchSql = new StringBuilder();
         insertCmd.jump(0);
         while (insertCmd.iterator() != null) {
@@ -418,7 +370,8 @@ public abstract class SqlBuilder {
     }
 
     public StringBuilder batchUpdateSql(DataObj destObj, String tbName) throws SQLException {
-        SqlCommand updateCmd = getUpdateSqlCore(destObj, tbName);
+        Table tb = destObj.getTable(tbName);
+        SqlCommand updateCmd = getUpdateSqlCore(destObj, tb);
         StringBuilder batchSql = new StringBuilder();
         updateCmd.jump(0);
         while (updateCmd.iterator() != null) {
@@ -459,7 +412,7 @@ public abstract class SqlBuilder {
 
                 selectCmd.appendSql(tb.getTableName());
                 selectCmd.appendSql(" ");
-                selectCmd.appendSql(tb.getTableName());
+                selectCmd.appendSql(tb.getAlias());
 
                 SqlCommand onCmd = new SqlCommand();
 
@@ -472,7 +425,7 @@ public abstract class SqlBuilder {
                 //关联字段条件
                 if (!StringUtils.isEmpty(tb.getColumnName()) && !StringUtils.isEmpty(tb.getRelationColumn())) {
                     StringBuilder onWhere = new StringBuilder();
-                    onWhere.append(tb.getTableName());
+                    onWhere.append(tb.getAlias());
                     onWhere.append(".");
                     onWhere.append(tb.getColumnName());
                     onWhere.append("=");

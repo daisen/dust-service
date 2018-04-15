@@ -65,30 +65,30 @@ public class OracleBuilder extends SqlBuilder {
 
         //构建command
         if (listDeleteRow.size() > 0) {
-            deleteCommands.add(getDeleteSqlCore(destObj, destObj.getTableName()));
+            deleteCommands.add(getDeleteSqlCore(destObj, destObj.getTable()));
         }
 
         if (listInsertRow.size() > 0) {
-            insertCommands.add(getInsertSqlCore(destObj, destObj.getTableName()));
+            insertCommands.add(getInsertSqlCore(destObj, destObj.getTable()));
         }
 
         if (listUpdateRow.size() > 0) {
-            updateCommands.add(getUpdateSqlCore(destObj, destObj.getTableName()));
+            updateCommands.add(getUpdateSqlCore(destObj, destObj.getTable()));
         }
 
         //构建关联表
         List<Table> tables = destObj.getTables();
         for (Table tb : tables) {
             if (tb.getFollowDelete() && listDeleteRow.size() > 0) {
-                deleteCommands.add(getDeleteSqlCore(destObj, tb.getTableName()));
+                deleteCommands.add(getDeleteSqlCore(destObj, tb));
             }
 
             if (tb.getFollowInsert() && listInsertRow.size() > 0) {
-                insertCommands.add(getInsertSqlCore(destObj, tb.getTableName()));
+                insertCommands.add(getInsertSqlCore(destObj, tb));
             }
 
             if (tb.getFollowUpdate() && listUpdateRow.size() > 0) {
-                insertCommands.add(getUpdateSqlCore(destObj, tb.getTableName()));
+                insertCommands.add(getUpdateSqlCore(destObj, tb));
             }
         }
 

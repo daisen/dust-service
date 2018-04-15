@@ -72,6 +72,10 @@ public class DataObj {
         this.name = name;
     }
 
+    public Table getTable() {
+        return new Table(this.tableName);
+    }
+
     public String getTableName() {
         return tableName;
     }
@@ -103,8 +107,8 @@ public class DataObj {
      * @
      */
     public boolean validate() {
-        for(DataObjRow row : this.rows) {
-            for(DataObjColumn col : this.columns) {
+        for (DataObjRow row : this.rows) {
+            for (DataObjColumn col : this.columns) {
                 if (col.isRequired() || col.isPrimaryKey()) {
                     Object val = row.getField(col).getValue();
                     if (val == null || val.equals("")) {
@@ -330,13 +334,18 @@ public class DataObj {
 
     //多表级联
 
-    public Table getTable(String tbName) {
-        checkNotNull(tbName);
+    public Table getTable(String alias) {
+        checkNotNull(alias);
         for (Table t : tables) {
-            if (StringUtils.equalsIgnoreCase(tbName, t.getTableName())) {
+            if (StringUtils.equalsIgnoreCase(alias, t.getAlias())) {
                 return t;
             }
         }
+
+        if (StringUtils.equals(alias, this.tableName)) {
+            return new Table(tableName);
+        }
+
         return null;
     }
 
@@ -344,13 +353,13 @@ public class DataObj {
         return this.tables;
     }
 
-    public String getTableNames() {
+    public String getTableAliases() {
         StringBuffer sb = new StringBuffer();
         for (Table t : tables) {
             if (sb.length() > 0) {
                 sb.append(",");
             }
-            sb.append(t.getTableName());
+            sb.append(t.getAlias());
         }
         return sb.toString();
     }
@@ -360,7 +369,7 @@ public class DataObj {
     //数据操作
 
     public void loadData(DataTable dataTable) {
-        for(DataRow row : dataTable.getRows()) {
+        for (DataRow row : dataTable.getRows()) {
             DataObjRow r = new DataObjRow(this);
             r.loadData(row);
             r.setRowState(RowState.UNCHANGED);
@@ -467,7 +476,7 @@ public class DataObj {
      * 接受修改，通常用于save操作
      */
     public void acceptChanges() {
-        for(DataObjRow row : this.rows) {
+        for (DataObjRow row : this.rows) {
             row.acceptChanges();
         }
 
@@ -904,6 +913,7 @@ public class DataObj {
 
     /**
      * 只允许无数据时，修改结构
+     *
      * @param dc
      * @return
      */

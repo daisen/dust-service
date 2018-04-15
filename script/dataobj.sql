@@ -63,6 +63,7 @@ CREATE TABLE `dataobj_table` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `master_id` bigint(20) unsigned NOT NULL,
   `table_name` char(50) NOT NULL,
+  `alias` char(50) DEFAULT NULL,
   `relation_type` char(20) DEFAULT 'LEFT',
   `column_name` char(20) DEFAULT NULL,
   `relation_column` char(20) DEFAULT NULL,

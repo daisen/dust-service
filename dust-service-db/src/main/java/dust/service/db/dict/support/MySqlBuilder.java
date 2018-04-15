@@ -40,26 +40,26 @@ public class MySqlBuilder extends SqlBuilder {
         List<SqlCommand> updateCommands = Lists.newArrayList();
 
         //构建command
-        deleteCommands.add(getDeleteSqlCore(destObj, destObj.getTableName()));
-        insertCommands.add(getInsertSqlCore(destObj, destObj.getTableName()));
-        updateCommands.add(getUpdateSqlCore(destObj, destObj.getTableName()));
+        deleteCommands.add(getDeleteSqlCore(destObj, destObj.getTable()));
+        insertCommands.add(getInsertSqlCore(destObj, destObj.getTable()));
+        updateCommands.add(getUpdateSqlCore(destObj, destObj.getTable()));
 
         List<Table> tables = destObj.getTables();
         for (Table tb : tables) {
             if (tb.getFollowDelete()) {
-                deleteCommands.add(getDeleteSqlCore(destObj, tb.getTableName()));
+                deleteCommands.add(getDeleteSqlCore(destObj, tb));
             }
 
             if (tb.getFollowInsert()) {
-                if (checkIdRelationColumn(destObj, tb.getTableName())) {
-                    delayInsertCommands.add(getInsertSqlCore(destObj, tb.getTableName()));
+                if (checkIdRelationColumn(destObj, tb.getAlias())) {
+                    delayInsertCommands.add(getInsertSqlCore(destObj, tb));
                 } else {
-                    insertCommands.add(getInsertSqlCore(destObj, tb.getTableName()));
+                    insertCommands.add(getInsertSqlCore(destObj, tb));
                 }
             }
 
             if (tb.getFollowUpdate()) {
-                insertCommands.add(getUpdateSqlCore(destObj, tb.getTableName()));
+                insertCommands.add(getUpdateSqlCore(destObj, tb));
             }
         }
 

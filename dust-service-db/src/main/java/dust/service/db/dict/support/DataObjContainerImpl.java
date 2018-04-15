@@ -142,6 +142,7 @@ public class DataObjContainerImpl implements IDataObjContainer {
                 "  gmt_modified,\n" +
                 "  master_id,\n" +
                 "  table_name,\n" +
+                "  alias,\n" +
                 "  relation_type,\n" +
                 "  column_name,\n" +
                 "  relation_column,\n" +
