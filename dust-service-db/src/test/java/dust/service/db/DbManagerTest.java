@@ -1,5 +1,6 @@
 package dust.service.db;
 
+import dust.service.TestApplication;
 import dust.service.db.sql.ISqlAdapter;
 import dust.service.db.tenant.DbManager;
 import dust.service.db.tenant.pojo.AppConfig;
@@ -10,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.SQLException;
@@ -19,7 +21,8 @@ import java.sql.SQLException;
  * @author huangshengtao
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = TestApplication.class)
+@TestPropertySource(locations = "classpath:application.properties")
 public class DbManagerTest {
     @Autowired
     DbManager dbManager;
@@ -29,6 +32,7 @@ public class DbManagerTest {
 
     @Value("${dust.db.test.commit:false}")
     public boolean commit;
+
 
     @Test
     public void testInsertApp() throws SQLException {

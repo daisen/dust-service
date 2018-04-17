@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class SqlCommand {
 
     private static final Integer MAX_PARAMETER_SIZE = 100;
-    private static Pattern patterns = Pattern.compile(":([_A-Za-z0-9]+)|#\\{([_A-Za-z0-9]+)}|\\$\\{([_A-Za-z0-9]+)}");
+    private static Pattern patterns = Pattern.compile(":([_A-Za-z][_A-Za-z0-9]+)|#\\{([_A-Za-z0-9]+)}|\\$\\{([_A-Za-z0-9]+)}");
     private static final String OR_OPERATION = " OR ";
     private static final String AND_OPERATION = " AND ";
     private static final String INDEX_KEY = "INDEX";
