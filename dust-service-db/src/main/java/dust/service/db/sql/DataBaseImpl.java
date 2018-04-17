@@ -205,7 +205,7 @@ public class DataBaseImpl implements IDataBase {
                 if (strParams.length() > 0) {
                     strParams.append(",");
                 }
-                strCaller.append("?");
+                strParams.append("?");
             }
         }
 
