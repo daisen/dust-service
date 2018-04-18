@@ -82,8 +82,8 @@ public class DruidTemplateTest {
         cmd.appendSql("SELECT * FROM dataobj");
         cmd.appendWhere("id=#{INDEX}");
         cmd.appendParameter(1);
-        cmd.appendWhere("alias=${INDEX}");
-        cmd.appendParameter("dataobj");
+        cmd.appendWhere("alias=:1alias");
+        cmd.setParameter("1alias", "dataobj");
         Connection connection = druidTemplate.getConnection("oracle");
         connection.setAutoCommit(true);
 
