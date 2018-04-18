@@ -269,7 +269,7 @@ public abstract class SqlBuilder {
 
                 if (col.isPrimaryKey()) {
                     if (pkWhere.length() > 0) {
-                        pkWhere.append(",");
+                        pkWhere.append(" AND ");
                     }
 
                     pkIndexes.add(i);

@@ -6,7 +6,7 @@
 
     <groupId>dust</groupId>
     <artifactId>service-core</artifactId>
-    <version>1.0.2018041601</version>
+    <version>1.0.2018041801</version>
     <developers>
         <developer>
             <id>huangshengtao</id>
@@ -17,6 +17,6 @@
     <parent>
         <groupId>dust</groupId>
         <artifactId>service</artifactId>
-        <version>1.0.2018041601</version>
+        <version>1.0.2018041801</version>
     </parent>
 </project>
