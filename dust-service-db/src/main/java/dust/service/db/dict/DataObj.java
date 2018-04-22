@@ -525,18 +525,15 @@ public class DataObj {
     }
 
     public Object getValue(DataObjRow row, DataObjColumn col) {
-        getField(col, row).getValue();
-        return this;
+        return getField(col, row).getValue();
     }
 
     public Object getValue(int rowIdx, String colName) {
-        getField(colName, rowIdx).getValue();
-        return this;
+        return getField(colName, rowIdx).getValue();
     }
 
     public Object getValue(DataObjRow row, String colName) {
-        getField(colName, row).getValue();
-        return this;
+        return getField(colName, row).getValue();
     }
 
 
