@@ -56,6 +56,10 @@ public abstract class BaseNode<T> {
         this.tableName = tableName;
     }
 
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
     public List<String> getValues() {
         return values;
     }
