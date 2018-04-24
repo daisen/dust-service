@@ -126,9 +126,9 @@ public class DataObjRow {
     }
 
     public void acceptChanges() {
-        if (rowState != RowState.MODIFIED && rowState != RowState.ADDED) {
-            throw new IllegalArgumentException("acceptChanges only can be invoked when row state is modified or added");
-        }
+//        if (rowState != RowState.MODIFIED && rowState != RowState.ADDED) {
+//            throw new IllegalArgumentException("acceptChanges only can be invoked when row state is modified or added");
+//        }
 
         for(DataObjField field : fieldList) {
             field.acceptChanges();
