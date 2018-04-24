@@ -32,7 +32,7 @@ public class MySqlDataBase extends DataBaseImpl {
                 if (cmd.getPageSize() > 0 && cmd.getTotalRows() <= 0) {
                     cmd.setTotalRows(getTotalRows(cmd));
                 }
-                execSql = "select * from (" + execSql + ") as tlist limit ?,?";
+                execSql = execSql + " limit ?,?";
 
                 params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex(), cmd.getPageSize()});
             }
