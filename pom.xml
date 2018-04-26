@@ -7,7 +7,7 @@
     <groupId>dust</groupId>
     <artifactId>service</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2018042301</version>
+    <version>1.0.2018042601</version>
     <modules>
         <module>dust-service-core</module>
         <module>dust-service-db</module>
@@ -64,8 +64,8 @@
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>sqljdbc</artifactId>
-            <version>4.1</version>
+            <artifactId>sqljdbc4</artifactId>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -103,17 +103,17 @@
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-core</artifactId>
-                <version>1.0.2018042301</version>
+                <version>1.0.2018042601</version>
             </dependency>
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-db</artifactId>
-                <version>1.0.2018042301</version>
+                <version>1.0.2018042601</version>
             </dependency>
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-micro</artifactId>
-                <version>1.0.2018042301</version>
+                <version>1.0.2018042601</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
