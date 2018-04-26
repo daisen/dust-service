@@ -3,6 +3,8 @@ package dust.service.db.sql;
 import com.google.common.collect.Lists;
 import com.sun.rowset.CachedRowSetImpl;
 import dust.service.db.util.DbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.RowSet;
 import java.sql.*;
@@ -18,6 +20,8 @@ import java.util.Map;
  * @author huangshengtao
  */
 public class DataBaseImpl implements IDataBase {
+
+    static Logger logger = LoggerFactory.getLogger(DataBaseImpl.class);
 
     private Connection connection;
 
@@ -125,7 +129,11 @@ public class DataBaseImpl implements IDataBase {
                     stmt.addBatch();
                 }
                 rows = stmt.executeBatch();
-            } finally {
+            } catch (SQLException ex) {
+                logger.info(cmd.getJdbcSql());
+                throw ex;
+            }
+            finally {
                 DbUtils.closeStatement(stmt);
             }
             return rows;

@@ -30,17 +30,22 @@ public class SqlServerDataBase extends DataBaseImpl {
         boolean tmpIgnoreOrder = cmd.isIgnoreOrder();
         try {
             Object[] params = cmd.getJdbcParameters();
+
             if (cmd.getPageSize() > 0) {
+                cmd.setIgnoreOrder(true);
                 if (cmd.getTotalRows() <= 0) {
                     cmd.setTotalRows(getTotalRows(cmd));
                 }
 
-                cmd.setIgnoreOrder(true);
                 execSql = "SELECT * FROM (SELECT row_number () OVER (ORDER BY " + cmd.getOrder() + ") AS rownum_ ,* " +
                         "FROM (" + cmd.getJdbcSql() + ") datarow_ ) row_ WHERE rownum_ >= ? AND rownum_ <= ?";
 
                 params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex() + 1, cmd.getEndIndex() + 1});
+            } else {
+                execSql = cmd.getJdbcSql();
             }
+
+
             PreparedStatement statement = getConnection().prepareStatement(execSql);
             RowSet rs = executeQuery(statement, params);
             if (cmd.getTotalRows() <= 0) {
