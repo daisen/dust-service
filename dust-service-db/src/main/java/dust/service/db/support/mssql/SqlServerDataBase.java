@@ -47,11 +47,7 @@ public class SqlServerDataBase extends DataBaseImpl {
 
 
             PreparedStatement statement = getConnection().prepareStatement(execSql);
-            RowSet rs = executeQuery(statement, params);
-            if (cmd.getTotalRows() <= 0) {
-                cmd.setTotalRows(rs.getFetchSize());
-            }
-            return rs;
+            return executeQuery(statement, params);
         } catch (SQLException se) {
             logger.error(execSql);
             throw se;

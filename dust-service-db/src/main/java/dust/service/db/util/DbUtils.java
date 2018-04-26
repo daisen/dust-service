@@ -78,6 +78,10 @@ public class DbUtils {
      */
     public static DataTable resultSet2Map(ResultSet rs) {
         DataTable result = new  DataTable();
+        if (rs == null) {
+            return result;
+        }
+
         try {
             while (rs.next()) {
                 DataRow dr = new DataRow();

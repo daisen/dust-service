@@ -67,7 +67,7 @@ public class DataBaseImpl implements IDataBase {
     @Override
     public DataTable query(SqlCommand cmd) throws SQLException {
         RowSet rs = queryRowSet(cmd);
-        if (rs.isClosed()) {
+        if (rs == null) {
             if (cmd.getCommandType() == CommandTypeEnum.StoredProcedure) {
                 Map<String, Object> procParams = cmd.getParameters();
                 for (String p : procParams.keySet()) {
@@ -78,9 +78,9 @@ public class DataBaseImpl implements IDataBase {
                 }
             }
 
-            throw new SQLException("row set had be closed");
+            throw new SQLException("row set had to be closed");
         } else {
-            return DbUtils.resultSet2Map(queryRowSet(cmd));
+            return DbUtils.resultSet2Map(rs);
         }
     }
 
@@ -201,18 +201,22 @@ public class DataBaseImpl implements IDataBase {
             if (param.getParamIoType() == ProcParaTypeEnum.INPUT) {
                 continue;
             }
-            Object csTmp;
             // 游标
             if (DataTypeEnum.CURSOR == param.getParamDataType()) {
                 try {
-                    csTmp = cs.getObject(i + 1);
-                    if (null != csTmp) {
-                        CachedRowSetImpl crs = new CachedRowSetImpl();
-                        crs.populate((ResultSet) csTmp);
-                        DataTable dt = DbUtils.resultSet2Map(crs);
-                        ds.add(dt);
-                        param.setValue(dt);
-
+                    ResultSet rs = (ResultSet)cs.getObject(i + 1);
+                    if (null != rs) {
+                        //保护性操作，如果游标关闭，则默认为没数据
+                        if (!rs.isClosed()) {
+                            CachedRowSetImpl crs = new CachedRowSetImpl();
+                            crs.populate(rs);
+                            DataTable dt = DbUtils.resultSet2Map(crs);
+                            ds.add(dt);
+                            param.setValue(dt);
+                        } else {
+                            logger.error("cursor had to be closed");
+                            param.setValue(new DataTable());
+                        }
                     }
                 } catch (SQLException e) {
                     if (!(e.getMessage().contains("Cursor is closed"))) {
@@ -220,7 +224,7 @@ public class DataBaseImpl implements IDataBase {
                     }
                 }
             } else {
-                csTmp = cs.getObject(i + 1);
+                Object csTmp = cs.getObject(i + 1);
                 param.setValue(csTmp);
             }
         }
@@ -292,10 +296,21 @@ public class DataBaseImpl implements IDataBase {
         }
     }
 
+    /**
+     *
+     * @param statement
+     * @param params
+     * @return 如果result set关闭则则为null，请注意判断
+     * @throws SQLException
+     */
     protected RowSet executeQuery(PreparedStatement statement, Object[] params) throws SQLException {
         try {
             DbUtils.fillStatement(statement, params);
             ResultSet rs = statement.executeQuery();
+            if (rs.isClosed()) {
+                return null;
+            }
+
             CachedRowSetImpl rowSet = new CachedRowSetImpl();
             rowSet.populate(rs);
             return rowSet;

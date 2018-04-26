@@ -37,11 +37,7 @@ public class MySqlDataBase extends DataBaseImpl {
                 params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex(), cmd.getPageSize()});
             }
             PreparedStatement statement = getConnection().prepareStatement(execSql);
-            RowSet rs = executeQuery(statement, params);
-            if (cmd.getTotalRows() <= 0) {
-                cmd.setTotalRows(rs.getFetchSize());
-            }
-            return rs;
+            return executeQuery(statement, params);
         } catch (SQLException se) {
             logger.error(execSql);
             throw se;

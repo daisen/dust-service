@@ -45,11 +45,7 @@ public class OracleDataBase extends DataBaseImpl {
                 params = ArrayUtils.addAll(params, new Object[]{cmd.getBeginIndex() + 1, cmd.getEndIndex() + 1});
             }
             PreparedStatement statement = getConnection().prepareStatement(execSql);
-            RowSet rs = executeQuery(statement, params);
-            if (cmd.getTotalRows() <= 0) {
-                cmd.setTotalRows(rs.getFetchSize());
-            }
-            return rs;
+            return executeQuery(statement, params);
         } catch (SQLException se) {
             logger.error(execSql);
             throw se;
@@ -88,6 +84,10 @@ public class OracleDataBase extends DataBaseImpl {
         }
 
         RowSet rs = queryRowSet(new SqlCommand(sql));
+        if (rs == null) {
+            throw new SQLException("orderParams method can not find procedure info");
+        }
+
         // Boolean hit = true;
         String oldOverload = "", newOverload = "", position, columnName;
         while (true) {
