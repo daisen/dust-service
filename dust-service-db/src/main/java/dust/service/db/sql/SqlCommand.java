@@ -20,16 +20,16 @@ import java.util.stream.Collectors;
  * 数据库Sql命令，dustdb不推荐使用拼接Sql的方式进行数据操作。<br/>
  * 使用SqlCommand的sql加上参数的方式来访问数据库，一是提高效率的同时，也可以防止Sql注入<br/>
  * 推荐使用参数化的sql书写方式，各个数据库对参数化的SQL语句都有优化，同时也可以避免书写错误或者SQL注入的问题<br/>
- *
+ * <p>
  * {@link #getJdbcSql()} 返回相应的执行Sql语句，{@link #getJdbcParameters()}返回执行语句的参数<br/>
- *  1.0.2018040301版本之后支持如果没有设置parameter，默认表示执行sql不需要对参数进行处理，即:key, #{key}, @{key}都不会替换为?<br/>
+ * 1.0.2018040301版本之后支持如果没有设置parameter，默认表示执行sql不需要对参数进行处理，即:key, #{key}, @{key}都不会替换为?<br/>
  *
  * @author huangshengtao
  */
 public class SqlCommand {
 
     private static final Integer MAX_PARAMETER_SIZE = 100;
-    private static Pattern patterns = Pattern.compile(":([_A-Za-z][_A-Za-z0-9]+)|#\\{([_A-Za-z0-9]+)}|\\$\\{([_A-Za-z0-9]+)}");
+    private static Pattern patterns = Pattern.compile(":([_A-Za-z][_A-Za-z0-9]*)|#\\{([_A-Za-z0-9]+)}|\\$\\{([_A-Za-z0-9]+)}");
     private static final String OR_OPERATION = " OR ";
     private static final String AND_OPERATION = " AND ";
     private static final String INDEX_KEY = "INDEX";
@@ -47,6 +47,7 @@ public class SqlCommand {
     private boolean useOrWhere = false;
     private int index = 0;
     private Object tag;
+    private boolean ignoreOrder;
 
     public SqlCommand(String sql) {
         this.commandText.append(sql);
@@ -162,7 +163,8 @@ public class SqlCommand {
         }
 
 
-        return this.parametersList.get(this.index);
+        parameters = this.parametersList.get(this.index);
+        return parameters;
     }
 
     public Map<String, Object> jump(int index) {
@@ -171,7 +173,8 @@ public class SqlCommand {
         }
 
         this.index = 0;
-        return this.parametersList.get(index);
+        parameters = this.parametersList.get(index);
+        return parameters;
     }
 
     /**
@@ -309,11 +312,14 @@ public class SqlCommand {
             desSb.append(wh);
         }
 
-        String orderStr = getOrder();
-        if (!StringUtils.isEmpty(orderStr)) {
-            desSb.append("\r\nORDER BY ");
-            desSb.append(orderStr);
+        if (!ignoreOrder) {
+            String orderStr = getOrder();
+            if (!StringUtils.isEmpty(orderStr)) {
+                desSb.append("\r\nORDER BY ");
+                desSb.append(orderStr);
+            }
         }
+
         return desSb.toString();
 
     }
@@ -613,5 +619,13 @@ public class SqlCommand {
 
     public void setTag(Object tag) {
         this.tag = tag;
+    }
+
+    public boolean isIgnoreOrder() {
+        return ignoreOrder;
+    }
+
+    public void setIgnoreOrder(boolean ignoreOrder) {
+        this.ignoreOrder = ignoreOrder;
     }
 }

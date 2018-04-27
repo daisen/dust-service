@@ -1,6 +1,7 @@
 package dust.service.db.support;
 
 import dust.service.db.sql.IDataBase;
+import dust.service.db.support.mssql.SqlServerDataBase;
 import dust.service.db.support.mysql.MySqlDataBase;
 import dust.service.db.support.oracle.OracleDataBase;
 
@@ -20,11 +21,14 @@ public class DataBaseFactory {
         }
 
         switch (dbType.toLowerCase()) {
-            case "oracle":
+            case JdbcConstants.ORACLE:
                 dataBase = new OracleDataBase();
                 break;
-            case "mysql":
+            case JdbcConstants.MYSQL:
                 dataBase = new MySqlDataBase();
+                break;
+            case JdbcConstants.SQL_SERVER:
+                dataBase = new SqlServerDataBase();
                 break;
             default:
                 dataBase = new MySqlDataBase();
