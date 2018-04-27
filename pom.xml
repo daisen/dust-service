@@ -7,7 +7,7 @@
     <groupId>dust</groupId>
     <artifactId>service</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2018042701</version>
+    <version>1.0.2018042702</version>
     <modules>
         <module>dust-service-core</module>
         <module>dust-service-db</module>
@@ -98,17 +98,17 @@
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-core</artifactId>
-                <version>1.0.2018042701</version>
+                <version>1.0.2018042702</version>
             </dependency>
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-db</artifactId>
-                <version>1.0.2018042701</version>
+                <version>1.0.2018042702</version>
             </dependency>
             <dependency>
                 <groupId>dust</groupId>
                 <artifactId>service-micro</artifactId>
-                <version>1.0.2018042701</version>
+                <version>1.0.2018042702</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
