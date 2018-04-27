@@ -199,6 +199,26 @@ public class OracleBuilder extends SqlBuilder {
         return false;
     }
 
+
+    @Override
+    protected boolean handleInsertSqlCoreColumn(DataObjColumn col, StringBuilder sbCols, StringBuilder sbValues, List<Integer> colIndexes) {
+        if (StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)
+                || StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
+            if (sbCols.length() > 0) {
+                sbCols.append(",");
+                sbCols.append(col.getColumnName());
+                sbValues.append(",SYSDATE");
+            } else {
+                sbCols.append(col.getColumnName());
+                sbValues.append("SYSDATE");
+            }
+
+            return true;
+        }
+
+        return super.handleInsertSqlCoreColumn(col, sbCols, sbValues, colIndexes);
+    }
+
     @Override
     protected boolean isInsertColumn(DataObjColumn col) {
         return !col.isIgnore()
