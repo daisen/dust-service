@@ -184,6 +184,12 @@ public class OracleBuilder extends SqlBuilder {
     }
 
     @Override
+    protected boolean isUpdateColumn(DataObjColumn col) {
+        return !col.isIgnore()
+                && !StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW);
+    }
+
+    @Override
     protected boolean handleUpdateSqlCoreColumn(DataObjColumn col, StringBuilder sbSet, List<Integer> setIndexes) {
         if (StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE)) {
             if (sbSet.length() > 0) {
@@ -221,9 +227,7 @@ public class OracleBuilder extends SqlBuilder {
 
     @Override
     protected boolean isInsertColumn(DataObjColumn col) {
-        return !col.isIgnore()
-                && !StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_NOW)
-                && !StringUtils.equals(col.getDefaultValue(), DictConstant.DEFAULT_VALUE_UPDATE);
+        return !col.isIgnore();
     }
 
     @Override
