@@ -180,17 +180,7 @@ public class DataBaseImpl implements IDataBase {
      * @throws SQLException
      */
     protected List<StoreProcParam> orderParams(SqlCommand cmd) throws SQLException {
-        Map<String, Object> paramMap = cmd.getParameters();
-        Map<String, StoreProcParam> paramMapUpper = new HashMap<>();
-        for (String key : paramMap.keySet()) {
-            StoreProcParam p = (StoreProcParam) paramMap.get(key);
-            if (p.getParamIoType() == ProcParaTypeEnum.FUNCRESULT) {
-                continue;
-            }
-            paramMapUpper.put(key.toUpperCase(), p);
-        }
-
-        return new ArrayList<>(paramMapUpper.values());
+        return cmd.getStoreProcParams();
     }
 
 

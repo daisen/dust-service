@@ -7,7 +7,6 @@ import dust.service.core.util.Converter;
 import dust.service.db.DustDbRuntimeException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ public class SqlCommand {
     private final StringBuilder commandText = new StringBuilder();
     private CommandTypeEnum commandType;
     private Map<String, Object> parameters;
+    private List<StoreProcParam> storeProcParams = Lists.newArrayList();
     private final ArrayList<String> keys = Lists.newArrayList();
     private final ArrayList<Map<String, Object>> parametersList = new ArrayList<>();
     private final StringBuffer where = new StringBuffer();
@@ -70,19 +70,30 @@ public class SqlCommand {
      * @param value
      * @return
      */
-    public SqlCommand setParameter(String key, Object value) throws SQLException {
-        if (commandType == CommandTypeEnum.StoredProcedure && !(value instanceof StoreProcParam)) {
-            throw new SQLException("SqlCommand类型设置为存储过程，Parameter只允许StoreProcParam类型");
+    public SqlCommand setParameter(String key, Object value) {
+        if (INDEX_KEY.equals(key)) {
+            throw new IllegalArgumentException("parameter key not allow to be " + INDEX_KEY);
         }
 
-        if (INDEX_KEY.equals(key)) {
-            throw new IllegalArgumentException("parameter key not allow to be " + key);
+        if (value instanceof StoreProcParam) {
+            if (commandType != CommandTypeEnum.StoredProcedure) {
+                throw new DustDbRuntimeException("SqlCommand类型设置不是存储过程，Parameter不允许为StoreProcParam类型");
+            }
+
+            if (this.storeProcParams.indexOf(value) < 0) {
+                this.storeProcParams.add((StoreProcParam) value);
+            }
+
+        } else {
+            if (commandType == CommandTypeEnum.StoredProcedure) {
+                throw new DustDbRuntimeException("SqlCommand类型设置为存储过程，Parameter只允许StoreProcParam类型");
+            }
         }
 
         if (StringUtils.isNumeric(key)) {
             Integer intKey = Converter.toInteger(key);
-            if (intKey != null && intKey >= 0 && intKey < MAX_PARAMETER_SIZE) {
-                throw new IllegalArgumentException("parameter key not allow to be zero or positive integer which less than 100");
+            if (intKey != parameters.size() && intKey < MAX_PARAMETER_SIZE) {
+                throw new IllegalArgumentException("when parameter key is numeric,  the value only can be parameter size or greater than " + MAX_PARAMETER_SIZE);
             }
         }
 
@@ -91,21 +102,15 @@ public class SqlCommand {
         return this;
     }
 
+    /**
+     * 添加参数，参数key默认为当前参数列表的长度
+     * 通常用于key为${INDEX}的sql
+     * @param value
+     * @return
+     * @throws DustDbRuntimeException
+     */
     public SqlCommand appendParameter(Object value) {
-        parameters.put("" + parameters.size(), value);
-        return this;
-    }
-
-    public String getParameterKey(String key) {
-        for (int i = 0; ; i++) {
-            if (i > 0) {
-                key = key + i;
-            }
-
-            if (!parameters.containsKey(key)) {
-                return key;
-            }
-        }
+        return setParameter("" + parameters.size(), value);
     }
 
     /**
@@ -146,6 +151,10 @@ public class SqlCommand {
      * @return
      */
     public Map<String, Object> next() {
+        if (commandType == CommandTypeEnum.StoredProcedure) {
+            throw new DustDbRuntimeException("next method can not be used of StoredProcedure");
+        }
+
         if (parameters != null && parameters.size() == 0) {
             return parameters;
         }
@@ -168,6 +177,10 @@ public class SqlCommand {
     }
 
     public Map<String, Object> jump(int index) {
+        if (commandType == CommandTypeEnum.StoredProcedure) {
+            throw new DustDbRuntimeException("jump method can not be used of StoredProcedure");
+        }
+
         if (index < 0 || index >= this.parametersList.size()) {
             throw new IndexOutOfBoundsException("index must be between 0 and parameters size");
         }
@@ -393,7 +406,7 @@ public class SqlCommand {
                 throw new DustDbRuntimeException(m.group(1) + " 缺失参数值");
             }
 
-            String dbValue = "";
+            String dbValue;
             if (sqlFunc == null) {
                 if (temp == null) {
                     dbValue = "NULL";
@@ -627,5 +640,9 @@ public class SqlCommand {
 
     public void setIgnoreOrder(boolean ignoreOrder) {
         this.ignoreOrder = ignoreOrder;
+    }
+
+    public List<StoreProcParam> getStoreProcParams() {
+        return storeProcParams;
     }
 }
