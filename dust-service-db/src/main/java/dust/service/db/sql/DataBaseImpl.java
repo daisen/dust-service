@@ -157,19 +157,18 @@ public class DataBaseImpl implements IDataBase {
         List<StoreProcParam> params = orderParams(cmd);
         CallableStatement cs = this.getConnection().prepareCall(getCallSql(cmd));
         setProcParams(cs, params);
+
         boolean hasResult = cs.execute();
+
+        CachedRowSetImpl rowSet = null;
+        if (hasResult) {
+            rowSet = new CachedRowSetImpl();
+            rowSet.populate(cs.getResultSet());
+        }
 
         // 输出参数处理;
         handleOut(params, cs);
-
-        if (hasResult) {
-            CachedRowSetImpl rowSet = new CachedRowSetImpl();
-            rowSet.populate(cs.getResultSet());
-            return rowSet;
-        }
-
-        return null;
-
+        return rowSet;
     }
 
     /**
