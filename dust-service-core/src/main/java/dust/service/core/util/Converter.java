@@ -91,6 +91,10 @@ public class Converter {
             return (Double) value;
         }
 
+        if (value instanceof BigDecimal) {
+            return ((BigDecimal) value).doubleValue();
+        }
+
         Double db = null;
         try {
             db = Double.parseDouble(value.toString());
@@ -127,6 +131,10 @@ public class Converter {
             return (Integer) value;
         }
 
+        if (value instanceof BigDecimal) {
+            return ((BigDecimal) value).intValue();
+        }
+
         Integer i = null;
         try {
             i = Integer.parseInt(value.toString());
@@ -139,6 +147,10 @@ public class Converter {
     public static Long toLong(Object value) {
         if (value == null) {
             return null;
+        }
+
+        if (value instanceof BigDecimal) {
+            return ((BigDecimal) value).longValue();
         }
 
         if (value instanceof Long) {
