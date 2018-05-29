@@ -21,7 +21,7 @@ public class TenantAdapterManager {
     @Autowired
     DustDbProperties dustDbProperties;
 
-    @Autowired
+    @Autowired(required = false)
     DbManager dbManager;
 
     /**
