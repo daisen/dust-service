@@ -192,7 +192,7 @@ public class ClassBuildUtils {
             case "Date":
                 return Converter.toDate(obj);
             case "Object":
-                return null;
+                return obj;
 
         }
 
