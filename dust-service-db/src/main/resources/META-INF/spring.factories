@@ -2,4 +2,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   dust.service.db.druid.DruidAutoConfiguration,\
   dust.service.db.sql.SqlAutoConfiguration,\
   dust.service.db.tenant.TenantAutoConfiguration,\
-  dust.service.db.DustDbAutoConfiguration
+  dust.service.db.DustDbAutoConfiguration,\
+  dust.service.db.dict.DictAutoConfiguration

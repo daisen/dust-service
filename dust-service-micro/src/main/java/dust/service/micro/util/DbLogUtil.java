@@ -1,13 +1,12 @@
 package dust.service.micro.util;
 
-import dust.service.db.DbAdapterManager;
-import dust.service.db.sql.ISqlAdapter;
-import dust.service.db.sql.SqlCommand;
+import dust.db.DbAdapterManager;
+import dust.db.sql.ISqlAdapter;
+import dust.db.sql.SqlCommand;
 import dust.service.micro.config.DustMsProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 import java.sql.SQLException;
 
@@ -18,7 +17,7 @@ public class DbLogUtil {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private static final String SQL_LOG_INSERT= "INSERT INTO dust_log_microservice(content) VALUES(:content)";
+    private static final String SQL_LOG_INSERT = "INSERT INTO dust_log_microservice(content) VALUES(:content)";
 
     @Autowired
     private DbAdapterManager dbAdapterManager;
@@ -28,6 +27,7 @@ public class DbLogUtil {
 
     public void write(String message, Throwable e) {
         if (!dustMsProperties.getLogging().getLogdb().isEnabled()) return;
+
         ISqlAdapter adapter = dbAdapterManager.getAdapter(dustMsProperties.getLogging().getLogdb().getDataSource());
         if (adapter != null) {
             SqlCommand cmd = new SqlCommand(SQL_LOG_INSERT);
@@ -42,6 +42,8 @@ public class DbLogUtil {
                 log.error("记录日志发生异常，发生详情： {}.{} with cause = {}", DbLogUtil.class, "write", ex.getCause());
             }
 
+        } else {
+            log.error("记录日志，数据库无法访问。错误信息：" + message, e);
         }
     }
 

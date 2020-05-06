@@ -1,10 +1,10 @@
 package dust.service.micro.aop.web;
 
 import com.alibaba.fastjson.JSONObject;
-import dust.service.db.dict.DataObj;
-import dust.service.db.dict.DataObjRow;
-import dust.service.db.sql.DataRow;
-import dust.service.db.sql.DataTable;
+import dust.db.dict.*;
+import dust.db.sql.*;
+import dust.service.micro.common.BuzException;
+import dust.service.micro.common.DustMsException;
 import dust.service.micro.config.Constants;
 import dust.service.micro.util.DbLogUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 /**
@@ -52,6 +53,12 @@ public class WebAspect {
                     joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
         }
         JSONObject jsonResult = new JSONObject();
+        Object data = null;
+        String status = "500";
+        String error = null;
+        String message = null;
+        String exception = null;
+
         try {
             Object result = joinPoint.proceed();
 
@@ -69,30 +76,43 @@ public class WebAspect {
                     case "DataObj":
                         DataObj dataObj = (DataObj) result;
                         if (dataObj.getPageInfo().getPageSize() > 0) {
-                            jsonResult.put("data", dataObj.toPageDataJSON());
+                            data = dataObj.toPageDataJSON();
                         } else {
-                            jsonResult.put("data", dataObj.toDataJSON());
+                            data = dataObj.toDataJSON();
                         }
                         break;
                     case "DataObjRow":
-                        jsonResult.put("data", ((DataObjRow) result).toJSON());
+                        data = ((DataObjRow) result).toJSON();
                         break;
                     case "DataTable":
-                        jsonResult.put("data", ((DataTable)result).toDataJSON());
+                        data = ((DataTable) result).toDataJSON();
                         break;
                     case "DataRow":
-                        jsonResult.put("data", ((DataRow)result).toJSON());
+                        data = ((DataRow) result).toJSON();
                         break;
                     default:
-                        jsonResult.put("data", result);
+                        data = result;
 
                 }
-            } else {
-                jsonResult.put("data", null);
             }
 
-            jsonResult.put("status", "200");
-            return jsonResult;
+            status = "200";
+        } catch (BuzException ex) {
+            status = "6001";
+            error = "业务错误";
+            message = ex.getMessage();
+            exception = ex.toString();
+
+        } catch (SQLException ex) {
+            status = "6100";
+            error = "数据库错误";
+            message = ex.getMessage();
+            exception = ex.toString();
+        } catch (DustMsException ex) {
+            status = "6200";
+            error = "Dust组件错误";
+            message = ex.getMessage();
+            exception = ex.toString();
         } catch (IllegalArgumentException e) {
             String str = String.format("无效参数: %s in %s.%s()", Arrays.toString(joinPoint.getArgs()),
                     joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
@@ -101,11 +121,10 @@ public class WebAspect {
             }
             logger.error(str);
 
-            jsonResult.put("status", "510");
-            jsonResult.put("error", "参数不符合要求");
-            jsonResult.put("message", e.getMessage());
-            jsonResult.put("exception", e.toString());
-            return jsonResult;
+            status = "5001";
+            error = "参数不符合要求";
+            message = e.getMessage();
+            exception = e.toString();
         } catch (Exception ex) {
             String str = String.format("服务器内部错误: %s in %s.%s()", Arrays.toString(joinPoint.getArgs()),
                     joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
@@ -115,12 +134,19 @@ public class WebAspect {
 
             logger.error(str, ex);
 
-            jsonResult.put("status", "511");
-            jsonResult.put("error", "服务器内部错误");
-            jsonResult.put("message", ex.getMessage());
-            jsonResult.put("exception", ex.toString());
-            return jsonResult;
+            status = "5000";
+            error = "服务器内部错误";
+            message = ex.getMessage();
+            exception = ex.toString();
+
         }
+
+        jsonResult.put("data", data);
+        jsonResult.put("status", status);
+        jsonResult.put("error", error);
+        jsonResult.put("message", message);
+        jsonResult.put("exception", exception);
+        return jsonResult;
     }
 
 

@@ -1,6 +1,7 @@
 package dust.service.micro.config;
 
 import dust.service.micro.repository.TenantRepository;
+import dust.service.micro.security.jwt.EncodeProvider;
 import dust.service.micro.util.DbLogUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
  * @author huangshengtao
  */
 @Configuration
-//@ComponentScan({"com.dust.db"})
-//@EnableAutoConfiguration
 public class ComponentConfiguration {
     @Bean
     public TenantRepository tenantRepository() {
@@ -21,5 +20,10 @@ public class ComponentConfiguration {
     @Bean
     public DbLogUtil dbLogUtil() {
         return new DbLogUtil();
+    }
+
+    @Bean
+    public EncodeProvider encodeProvider() {
+        return new EncodeProvider();
     }
 }

@@ -1,8 +1,8 @@
 package dust.service.micro.repository;
 
-import dust.service.db.DbAdapterManager;
-import dust.service.db.TenantAdapterManager;
-import dust.service.db.sql.ISqlAdapter;
+import dust.db.DbAdapterManager;
+import dust.db.sql.ISqlAdapter;
+import dust.db.tenant.TenantAdapterManager;
 import dust.service.micro.common.DustMsException;
 import dust.service.micro.security.DustAuthentication;
 import dust.service.micro.security.SysParam;
@@ -17,7 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author huangshengtao
  */
 public class TenantRepository {
-    @Autowired
+
+    @Autowired(required = false)
     TenantAdapterManager tenantAdapterManager;
 
     @Autowired
@@ -25,7 +26,7 @@ public class TenantRepository {
 
     public ISqlAdapter getAdapter(String defaultSourceName) throws DustMsException {
         //单体应用使用DbAdapterManager的逻辑
-        if (tenantAdapterManager.isSingle()) {
+        if (tenantAdapterManager.isSingle() || tenantAdapterManager == null) {
             return dbAdapterManager.getAdapter(defaultSourceName);
         }
 
@@ -40,10 +41,6 @@ public class TenantRepository {
             return tenantAdapterManager.getAdapter(sysParam.getTenantId(), sysParam.getAppId());
         }
 
-        ISqlAdapter adapter = dbAdapterManager.getAdapter(defaultSourceName);
-        if (adapter == null) {
-            throw new RepositoryException("没有找到当前用户对应的数据库");
-        }
-        return adapter;
+        return dbAdapterManager.getAdapter(defaultSourceName);
     }
 }

@@ -3,10 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.gitee.gtman</groupId>
+        <artifactId>dust-service</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
 
-    <groupId>dust</groupId>
-    <artifactId>service-micro</artifactId>
-    <version>1.0.2018052901</version>
+    <groupId>com.gitee.gtman</groupId>
+    <artifactId>dust-service-micro</artifactId>
     <developers>
         <developer>
             <id>huangshengtao</id>
@@ -14,12 +18,6 @@
             <email>huangstao@hotmail.com</email>
         </developer>
     </developers>
-
-    <parent>
-        <groupId>dust</groupId>
-        <artifactId>service</artifactId>
-        <version>1.0.2018052901</version>
-    </parent>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -63,8 +61,8 @@
             <artifactId>spring-cloud-commons</artifactId>
         </dependency>
         <dependency>
-            <groupId>dust</groupId>
-            <artifactId>service-db</artifactId>
+            <groupId>com.gitee.gtman</groupId>
+            <artifactId>dust-service-db</artifactId>
         </dependency>
     </dependencies>
 </project>

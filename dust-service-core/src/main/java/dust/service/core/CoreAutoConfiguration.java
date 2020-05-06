@@ -1,23 +1,25 @@
 package dust.service.core;
 
-import dust.service.core.util.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import dust.commons.util.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author huangshengtao on 2018-4-9.
+ * Created by hst on 2018/7/2.
  */
 @Configuration
-public class CoreAutoConfiguration implements InitializingBean {
-    @Autowired
-    ApplicationContext applicationContext;
+public class CoreAutoConfiguration {
+    public CoreAutoConfiguration(ApplicationContext context) {
+        BeanUtils.FACTORY = new BeanUtils.IBeanFactory() {
+            @Override
+            public boolean containsBean(String name) {
+                return context.containsBean(name);
+            }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.CONTEXT = applicationContext;
+            @Override
+            public Object getBean(String name) {
+                return context.getBean(name);
+            }
+        };
     }
-
-
 }

@@ -99,7 +99,7 @@ public final class SecurityUtils {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null && authentication instanceof DustAuthentication) {
-            return ((DustAuthentication) authentication).getUserInfo();
+            return (JSONObject) authentication.getDetails();
         }
         return null;
     }

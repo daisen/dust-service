@@ -1,6 +1,5 @@
 package dust.service.micro.web.filter;
 
-import dust.service.core.util.BeanUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.*;

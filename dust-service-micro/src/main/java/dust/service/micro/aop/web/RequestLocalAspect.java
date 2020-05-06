@@ -1,9 +1,9 @@
 package dust.service.micro.aop.web;
 
-import dust.service.core.thread.LocalHolder;
-import dust.service.core.util.BeanUtils;
-import dust.service.db.DbAdapterManager;
-import dust.service.db.dict.DictGlobalConfig;
+import dust.commons.thread.LocalHolder;
+import dust.commons.util.BeanUtils;
+import dust.db.DbAdapterManager;
+import dust.db.dict.DictGlobalConfig;
 import dust.service.micro.repository.RepositoryException;
 import dust.service.micro.repository.TenantRepository;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -33,11 +33,7 @@ public class RequestLocalAspect {
     public void customMappingPointcut() {
     }
 
-    @Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping) ")
-    public void requestMappingPointcut() {
-    }
-
-    @Around("dustMappingPointcut() || requestMappingPointcut() || customMappingPointcut()")
+    @Around("dustMappingPointcut() || customMappingPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         if (DictGlobalConfig.isAutoInitAdapter()) {
             TenantRepository repository = (TenantRepository) BeanUtils.getBean("tenantRepository");

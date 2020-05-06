@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +13,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -28,18 +26,14 @@ import javax.servlet.ServletException;
 @Configuration
 //@EnableWebMvc
 @EnableConfigurationProperties(DustMsProperties.class)
-public class WebConfiguration extends WebMvcConfigurerAdapter
-        implements ServletContextInitializer, EmbeddedServletContainerCustomizer {
+public class WebConfiguration
+        implements WebMvcConfigurer, ServletContextInitializer {
 
     private final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
 
     @Autowired
     DustMsProperties dustMsProperties;
 
-    @Override
-    public void customize(ConfigurableEmbeddedServletContainer configurableEmbeddedServletContainer) {
-
-    }
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {

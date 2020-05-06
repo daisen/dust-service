@@ -1,6 +1,6 @@
 package dust.service.micro.security.jwt;
 
-import dust.service.core.util.CustomBase64;
+import dust.commons.util.CustomBase64;
 import dust.service.micro.config.DustMsProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

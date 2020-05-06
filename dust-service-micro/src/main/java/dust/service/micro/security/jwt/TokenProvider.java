@@ -26,14 +26,11 @@ public class TokenProvider {
     @Autowired(required = false)
     private IAuthentication authenticationImpl;
 
-    @Autowired
-    EncodeProvider encodeProvider;
-
     private IAuthentication jwtAuthenticationImpl;
 
     @PostConstruct
     public void init() {
-        jwtAuthenticationImpl = new JWTAuthenticationImpl(dustMsProperties, encodeProvider);
+        jwtAuthenticationImpl = new JWTAuthenticationImpl(dustMsProperties);
     }
 
     public String createJwtToken(Authentication authentication, Boolean rememberMe) {

@@ -1,8 +1,8 @@
 package com.example.demo;
 
 import com.example.DemoApplication;
-import dust.service.db.DbAdapterManager;
-import dust.service.db.sql.ISqlAdapter;
+import dust.db.DbAdapterManager;
+import dust.db.sql.ISqlAdapter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

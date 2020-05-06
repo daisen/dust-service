@@ -100,9 +100,9 @@ public class DustMsProperties {
 
         private int corePoolSize = 2;
 
-        private int maxPoolSize = 50;
+        private int maxPoolSize = Integer.MAX_VALUE;
 
-        private int queueCapacity = 10000;
+        private int queueCapacity = 0;
 
         public int getCorePoolSize() {
             return corePoolSize;

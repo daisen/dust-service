@@ -1,25 +1,25 @@
 package dust.service.micro.security.jwt;
 
-import com.google.common.collect.Lists;
+import dust.commons.util.EncryptUtils;
 import dust.service.micro.config.DustMsProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
-
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 数据验证类
  * 处理规则
  * <ul>
- * <li>将所有参数（sign除外）按照参数名的字母顺序排序，并用&连接:app_id=123&tenant_id=789&timestamp=12345</li>
- * <li>加上服务的相对地址，组成最后的待加密内容：urlPath + ? + 排序后才参数，如sys/user? app_id=123& tenant_id=789&timestamp=12345</li>
+ * <li>将所有参数（sign除外）按照参数名的字母顺序排序，并用&amp;连接:app_id=123&amp;tenant_id=789&amp;timestamp=12345</li>
+ * <li>加上服务的相对地址，组成最后的待加密内容：urlPath + ? + 排序后才参数，如sys/user? app_id=123&amp;tenant_id=789&amp;timestamp=12345</li>
  * <li>将待加密内容进行一次md5，如514a018a1cbb0ff13e0753e5e9d74a71</li>
- * <li>最后的请求内容http://xxxx/ sys/user? app_id=123& tenant_id=789&timestamp=12345&sign=514a018a1cbb0ff13e0753e5e9d74a71</li>
+ * <li>最后的请求内容http://xxxx/sys/user?app_id=123&amp;tenant_id=789&amp;timestamp=12345&amp;sign=514a018a1cbb0ff13e0753e5e9d74a71</li>
  * </ul>
  *
  * @author huangshengtao
@@ -47,13 +47,12 @@ public class SignProvider {
         sb.append(req.getRequestURI());
         sb.append("?");
         sb.append(orderRequestParams(req));
-        Md5PasswordEncoder encoder = new Md5PasswordEncoder();
-        String reqSign = encoder.encodePassword(sb.toString(), getSecretKey());
+        String reqSign = EncryptUtils.md5(sb.toString() + getSecretKey());
         return StringUtils.equalsIgnoreCase(reqSign, sign);
     }
 
     private String orderRequestParams(HttpServletRequest req) {
-        List<String> stringList = Lists.newArrayList();
+        List<String> stringList = new ArrayList();
         Map<String, String[]> maps = req.getParameterMap();
         maps.forEach((s, strings) -> {
             if (StringUtils.equalsIgnoreCase(s, SIGN_KEY)) return;

@@ -1,6 +1,7 @@
 package dust.service.micro.web;
 
-import dust.service.core.thread.LocalHolder;
+
+import dust.commons.thread.LocalHolder;
 
 /**
  * 系统参数信息的容器

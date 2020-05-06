@@ -4,15 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dust</groupId>
-    <artifactId>service</artifactId>
+    <groupId>com.gitee.gtman</groupId>
+    <artifactId>dust-service</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.2018052901</version>
+    <version>2.0-SNAPSHOT</version>
     <modules>
         <module>dust-service-core</module>
         <module>dust-service-db</module>
         <module>dust-service-micro</module>
     </modules>
+
+    <name>dust-service</name>
+    <description>基于SpringBoot的微服务开发组件</description>
+    <url>https://gitee.com/gtman/dust-service</url>
+
     <developers>
         <developer>
             <id>huangshengtao</id>
@@ -20,21 +25,35 @@
             <email>huangstao@hotmail.com</email>
         </developer>
     </developers>
+
+    <licenses>
+        <license>
+            <name>The MIT License (MIT)</name>
+            <url>https://gitee.com/gtman/dust-service/raw/master/LICENSE</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:https://gitee.com/gtman/dust-service.git</connection>
+        <developerConnection>scm:https://gitee.com/gtman/dust-service.git</developerConnection>
+        <url>https://gitee.com/gtman/dust-service.git</url>
+    </scm>
+
     <properties>
         <java.version>1.8</java.version>
-        <mysql-connector.version>6.0.5</mysql-connector.version>
-        <fastjson.version>1.2.29</fastjson.version>
-        <ojdbc.version>6</ojdbc.version>
-        <druid.version>1.0.27</druid.version>
-        <guava.version>21.0</guava.version>
-        <lang3.version>3.5</lang3.version>
         <hazelcast.version>3.6.5</hazelcast.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <dust.commons.version>2.0-SNAPSHOT</dust.commons.version>
+        <dust.db.version>2.0-SNAPSHOT</dust.db.version>
+        <dust.version>2.0-SNAPSHOT</dust.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.2.RELEASE</version>
+        <version>2.0.3.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -48,31 +67,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>${fastjson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>sqljdbc4</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-stream</artifactId>
         </dependency>
@@ -80,48 +74,142 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${lang3.version}</version>
-        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Dalston.RELEASE</version>
+                <version>Finchley.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>dust</groupId>
-                <artifactId>service-core</artifactId>
-                <version>1.0.2018052901</version>
+                <groupId>com.gitee.gtman</groupId>
+                <artifactId>dust-service-core</artifactId>
+                <version>${dust.version}</version>
             </dependency>
             <dependency>
-                <groupId>dust</groupId>
-                <artifactId>service-db</artifactId>
-                <version>1.0.2018052901</version>
+                <groupId>com.gitee.gtman</groupId>
+                <artifactId>dust-service-db</artifactId>
+                <version>${dust.version}</version>
             </dependency>
             <dependency>
-                <groupId>dust</groupId>
-                <artifactId>service-micro</artifactId>
-                <version>1.0.2018052901</version>
+                <groupId>com.gitee.gtman</groupId>
+                <artifactId>dust-service-micro</artifactId>
+                <version>${dust.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <distributionManagement>
-    <repository>
-        <id>myRepository</id>
-        <name>myRepository</name>
-        <url>http://101.200.49.119:8081/nexus/content/repositories/releases/</url>
-    </repository>
-    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>oss</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <!-- Source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Gpg Signature -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>my</id>
+            <distributionManagement>
+                <repository>
+                    <id>myReleases</id>
+                    <name>my internal repository</name>
+                    <url>http://39.104.95.247:8091/nexus/content/repositories/releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>mySnapshots</id>
+                    <name>my internal repository</name>
+                    <url>http://39.104.95.247:8091/nexus/content/repositories/snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <!-- Source -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

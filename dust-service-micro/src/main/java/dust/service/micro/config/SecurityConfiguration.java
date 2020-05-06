@@ -1,7 +1,6 @@
 package dust.service.micro.config;
 
 import dust.service.micro.security.AuthoritiesConstants;
-import dust.service.micro.security.jwt.EncodeProvider;
 import dust.service.micro.security.jwt.JWTConfigurer;
 import dust.service.micro.security.jwt.SignProvider;
 import dust.service.micro.security.jwt.TokenProvider;
@@ -43,10 +42,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new SignProvider();
     }
 
-    @Bean
-    public EncodeProvider encodeProvider() {
-        return new EncodeProvider();
-    }
+
 
     /**
      * 配置请求忽略列表

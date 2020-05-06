@@ -35,7 +35,7 @@ public @interface DustMapping {
 
     @AliasFor(annotation = RequestMapping.class, attribute = "consumes")
     String[] consumes() default {
-        "application/x-www-form-urlencoded"
+        "application/json"
     };
 
     @AliasFor(annotation = RequestMapping.class, attribute = "produces")

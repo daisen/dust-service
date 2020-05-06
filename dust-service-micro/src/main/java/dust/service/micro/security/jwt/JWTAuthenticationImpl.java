@@ -3,7 +3,7 @@ package dust.service.micro.security.jwt;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import dust.service.core.util.Converter;
+import dust.commons.util.Converter;
 import dust.service.micro.config.DustMsProperties;
 import dust.service.micro.security.DustAuthentication;
 import dust.service.micro.security.SysParam;
@@ -22,10 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,16 +31,14 @@ import java.util.stream.Collectors;
 public class JWTAuthenticationImpl implements IAuthentication {
     private final Logger logger = LoggerFactory.getLogger(JWTAuthenticationImpl.class);
 
-    private static final String AUTHORITIES_KEY = "auth";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String AUTHORIZATION_PARAMETER = "token";
+    public static final String AUTHORITIES_KEY = "auth";
+    public static final String AUTHORIZATION_HEADER = "X-TOKEN";
+    public static final String AUTHORIZATION_PARAMETER = "token";
 
-    private EncodeProvider encodePrivider;
-    private DustMsProperties dustMsProperties;
+    protected DustMsProperties dustMsProperties;
 
-    public JWTAuthenticationImpl(DustMsProperties dustMsProperties, EncodeProvider encodeProvider) {
+    public JWTAuthenticationImpl(DustMsProperties dustMsProperties) {
         this.dustMsProperties = dustMsProperties;
-        this.encodePrivider = encodeProvider;
     }
 
     @Override
@@ -52,19 +47,40 @@ public class JWTAuthenticationImpl implements IAuthentication {
             return true;
         }
 
+        return this.validateRequestByDust(request);
+    }
+
+    public boolean validateRequestByDust(HttpServletRequest request) {
         try {
-            Authentication authentication = resolveToken(request);
-            if (authentication != null) {
-                if (authentication instanceof DustAuthentication) {
-                    SysParam sysParam = ((DustAuthentication) authentication).getSysParam();
-                    if (sysParam == null) {
-                        ((DustAuthentication) authentication).setSysParam(this.resolveSysParam(request));
-                    }
-                }
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                return true;
+            DustAuthentication auth = null;
+            String token = resolveToken(request);
+            if (StringUtils.isEmpty(token)) {
+                return false;
             }
-            return false;
+
+            //BearerToken，标准JWT模式
+            if (token.startsWith("Bearer ")) {
+                auth = bearer2Authentication(token);
+            }
+
+            //JSON明文传输
+            if (token.startsWith("{") && token.endsWith("}")) {
+                auth =  Json2Authentication(token);
+            }
+
+            if (auth == null) {
+                debuggerLog("无效的token，无法转化为DustAuthentication");
+                return false;
+            }
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            SysParam sysParam = auth.getSysParam();
+            if (sysParam == null) {
+                auth.setSysParam(this.resolveSysParam(request));
+            }
+            return true;
+
+
         } catch (SignatureException e) {
             debuggerLog("无效的token, 无法parse为可识别的信息");
             return false;
@@ -72,16 +88,11 @@ public class JWTAuthenticationImpl implements IAuthentication {
             debuggerLog("jsonwebtoken第三方认证失败");
             return false;
         }
-
     }
 
 
     @Override
     public String createToken(Authentication authentication, Boolean rememberMe) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(authority -> authority.getAuthority())
-                .collect(Collectors.joining(","));
-
         long now = (new Date()).getTime();
         Date validity;
         if (rememberMe) {
@@ -90,9 +101,15 @@ public class JWTAuthenticationImpl implements IAuthentication {
             validity = new Date(now + this.getTokenValidityInSeconds());
         }
 
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", authentication.getName());
+        if (authentication.getDetails() instanceof Map) {
+            claims = (Map<String, Object>) authentication.getDetails();
+        }
+
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+                .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, getSecretKey())
                 .setExpiration(validity)
                 .compact();
@@ -103,41 +120,25 @@ public class JWTAuthenticationImpl implements IAuthentication {
      * @param token
      * @return
      */
-    public DustAuthentication Json2Authentication(String token) throws JWTException {
+    protected DustAuthentication Json2Authentication(String token) throws JWTException {
         try {
             JSONObject userInfo = JSON.parseObject(token);
-            return new DustAuthentication(userInfo);
+            return new DustAuthentication(userInfo.getString(getUserKey()), userInfo);
         } catch (JSONException ex) {
             throw new JWTException("token不满足JSON格式", ex);
         }
     }
 
-    /**
-     * 普通token转化为UserPasswordAuthentication
-     * @param token
-     * @return
-     */
-    private Authentication getUserPasswordAuthentication(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(getSecretKey())
-                .parseClaimsJws(token)
-                .getBody();
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.asList(claims.get(AUTHORITIES_KEY).toString().split(",")).stream()
-                        .map(authority -> new SimpleGrantedAuthority(authority))
-                        .collect(Collectors.toList());
-
-        User principal = new User(claims.getSubject(), "",
-                authorities);
-
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    protected String getUserKey() {
+        return "userId";
     }
+
 
     /**
      * token转化为Authorization对象
      * @param token
      */
-    public DustAuthentication bearer2Authentication(String token) throws JWTException {
+    protected DustAuthentication bearer2Authentication(String token) throws JWTException {
         String authToken = token.substring(7, token.length());
         Claims claims = Jwts.parser()
                 .setSigningKey(getSecretKey())
@@ -150,37 +151,21 @@ public class JWTAuthenticationImpl implements IAuthentication {
         }
 
         if (userInfo != null) {
-            return new DustAuthentication(userInfo);
+            return new DustAuthentication(userInfo.getString(getUserKey()), userInfo);
         } else {
             throw new JWTException("没有找到可解析的token信息");
         }
     }
 
-    private Authentication resolveToken(HttpServletRequest request) throws JWTException {
+    protected String resolveToken(HttpServletRequest request) throws JWTException {
         String token = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.isEmpty(token)) {
             token = request.getParameter(AUTHORIZATION_PARAMETER);
         }
-
-        if (StringUtils.isNotEmpty(token)) {
-            //BearToken，标准JWT模式
-            if (token.startsWith("Bearer ")) {
-                return bearer2Authentication(token);
-
-            }
-
-            //JSON明文传输
-            if (token.startsWith("{") && token.endsWith("}")) {
-                return Json2Authentication(token);
-            }
-
-            return getUserPasswordAuthentication(token);
-        }
-
-        return null;
+        return token;
     }
 
-    private SysParam resolveSysParam(HttpServletRequest req) {
+    protected SysParam resolveSysParam(HttpServletRequest req) {
         SysParam sysParam = new SysParam();
         Map<String, String[]> maps = req.getParameterMap();
         maps.forEach((s, strings) -> {
